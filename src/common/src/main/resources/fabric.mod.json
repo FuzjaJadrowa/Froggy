@@ -18,6 +18,9 @@
   "entrypoints": {
     "main": [
       "pl.fuzjajadrowa.froggy.fabric.FroggyFabric"
+    ],
+    "client": [
+      "pl.fuzjajadrowa.froggy.fabric.FroggyFabric"
     ]
   },
   "depends": {

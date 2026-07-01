@@ -1,0 +1,27 @@
+{
+  "scream1": {
+    "sounds": [
+      "froggy:scream1"
+    ]
+  },
+  "scream2": {
+    "sounds": [
+      "froggy:scream2"
+    ]
+  },
+  "scream3": {
+    "sounds": [
+      "froggy:scream3"
+    ]
+  },
+  "sleeping": {
+    "sounds": [
+      "froggy:sleeping"
+    ]
+  },
+  "walk": {
+    "sounds": [
+      "froggy:walk"
+    ]
+  }
+}

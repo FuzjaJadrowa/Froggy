@@ -1,25 +1,19 @@
-// src/neoforge/build.gradle.kts
-// NeoForge-specific build configuration using dev.architectury.loom.
-
 plugins {
-    id("dev.architectury.loom") version "1.14-SNAPSHOT"
+    id("dev.architectury.loom") version "1.17.487"
     id("me.modmuss50.mod-publish-plugin")
 }
 
-// Ensure the common project has been evaluated so its source set references are populated.
 evaluationDependsOn(":common")
 
 version = "${mod.version}+${mod.prop("mc_title")}"
 group = mod.group
 
 base {
-    // Generates output named e.g., ExampleMod-neoforge-1.0.0+1.21.1.jar
-    archivesName.set("${mod.name}-neoforge")
+    archivesName.set("${mod.name}-neoforge-${version}")
 }
 
 sourceSets {
     main {
-        // Link to the common java sources and resource files so they compile directly into this loader.
         val commonSourceSets = project(":common").extensions.getByType<SourceSetContainer>()
         val commonMain = commonSourceSets.named("main").get()
         java.srcDirs(commonMain.java.srcDirs)
@@ -29,6 +23,7 @@ sourceSets {
 
 repositories {
     maven("https://maven.neoforged.net/releases/")
+    maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
 }
 
 dependencies {
@@ -38,6 +33,7 @@ dependencies {
     compileOnly(project(":common")) {
         isTransitive = false
     }
+    implementation("software.bernie.geckolib:geckolib-neoforge-1.21.1:${mod.dep("geckolib_version")}")
 }
 
 loom {
@@ -65,7 +61,6 @@ tasks.withType<JavaExec>().configureEach {
 }
 
 tasks.processResources {
-    // Replace tokens in neoforge.mods.toml with properties loaded from gradle.properties
     properties(
         listOf("META-INF/neoforge.mods.toml"),
         "id" to mod.id,
@@ -75,7 +70,6 @@ tasks.processResources {
         "loader" to mod.dep("neoforge_loader_range"),
         "neoforge" to mod.dep("neoforge_version_range")
     )
-    // Replace tokens in mixin configurations
     properties(
         listOf("*.mixins.json"),
         "java" to mod.prop("java_version")
@@ -90,5 +84,4 @@ tasks.jar {
     archiveClassifier.set("dev")
 }
 
-// Activates the custom ModPublishPlugin release task configured in buildSrc.
 configurePublishing()

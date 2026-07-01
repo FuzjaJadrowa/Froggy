@@ -5,4 +5,7 @@ public final class Froggy {
 
     private Froggy() {
     }
+
+    public static void init() {
+    }
 }
