@@ -59,17 +59,10 @@ public class FroggySpawner {
     }
 
     private static int getRandomCooldown(net.minecraft.util.RandomSource random) {
-        return 36000 + random.nextInt(12000);
+        return 24000 + random.nextInt(12000);
     }
 
     private static boolean trySpawnAmbientFroggy(ServerPlayer player, ServerLevel level) {
-        boolean isNight = level.isNight();
-        boolean isUnderground = player.getY() < 50 && level.getMaxLocalRawBrightness(player.blockPosition()) < 7;
-        
-        if (!isNight && !isUnderground) {
-            return false;
-        }
-
         double roll = player.getRandom().nextDouble();
         if (roll < 0.60) {
             return trySpawnJumpscare(player, level);
@@ -158,10 +151,6 @@ public class FroggySpawner {
     }
 
     private static void trySpawnSleepingFroggy(ServerPlayer player, ServerLevel level) {
-        if (!level.isNight()) {
-            return;
-        }
-
         BlockPos playerPos = player.blockPosition();
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         List<BlockPos> beds = new ArrayList<>();
