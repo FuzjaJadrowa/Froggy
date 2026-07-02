@@ -21,5 +21,12 @@
   "gui.froggy.config.jumpscare": "Spawn Jumpscare",
   "gui.froggy.config.sleeping": "Spawn Śpiocha",
   "gui.froggy.config.bored": "Spawn Znudzonego",
-  "gui.froggy.config.save": "Zapisz i Zamknij"
+  "gui.froggy.config.weight_stalker": "Waga Stalkera",
+  "gui.froggy.config.weight_jumpscare": "Waga Jumpscare",
+  "gui.froggy.config.weight_bored": "Waga Znudzonego",
+  "gui.froggy.config.sleep_chance": "Szansa na Śpiocha",
+  "gui.froggy.config.min_rate": "Min Odnowienie",
+  "gui.froggy.config.max_random": "Max Losowe",
+  "gui.froggy.config.sleep_check": "Sprawdzanie Łóżek",
+  "gui.froggy.config.server_managed": "Ustawienia Serwera (Tylko do odczytu)"
 }

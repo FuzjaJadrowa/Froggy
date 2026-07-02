@@ -21,5 +21,12 @@
   "gui.froggy.config.jumpscare": "Jumpscare Spawn",
   "gui.froggy.config.sleeping": "Sleeping Spawn",
   "gui.froggy.config.bored": "Bored Spawn",
-  "gui.froggy.config.save": "Save & Close"
+  "gui.froggy.config.weight_stalker": "Stalker Weight",
+  "gui.froggy.config.weight_jumpscare": "Jumpscare Weight",
+  "gui.froggy.config.weight_bored": "Bored Weight",
+  "gui.froggy.config.sleep_chance": "Sleeping Chance",
+  "gui.froggy.config.min_rate": "Min Cooldown",
+  "gui.froggy.config.max_random": "Max Random",
+  "gui.froggy.config.sleep_check": "Sleep Check",
+  "gui.froggy.config.server_managed": "Managed by Server (Read Only)"
 }
