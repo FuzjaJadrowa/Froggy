@@ -105,7 +105,7 @@ public class FroggySpawner {
 
         for (int i = 0; i < 30; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double distance = 6.0 + random.nextDouble() * 6.0;
+            double distance = 4.0 + random.nextDouble() * 4.0;
             double x = playerPos.x + Math.cos(angle) * distance;
             double z = playerPos.z + Math.sin(angle) * distance;
 
@@ -162,7 +162,7 @@ public class FroggySpawner {
         
         for (int i = 0; i < 30; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double distance = 6.0 + random.nextDouble() * 6.0;
+            double distance = 4.0 + random.nextDouble() * 4.0;
             double x = playerPos.x + Math.cos(angle) * distance;
             double z = playerPos.z + Math.sin(angle) * distance;
             

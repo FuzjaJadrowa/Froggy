@@ -45,6 +45,11 @@ fun Project.configurePublishing() {
             projectId.set(providerPropertyOrEnvironment(MODRINTH_PROJECT_ID_PROPERTY, "MODRINTH_PROJECT_ID"))
             configureMinecraftVersions(supportedMinecraftVersions)
             if (loader == "fabric") {
+                requires("fabric-api")
+                requires("geckolib")
+                optional("modmenu")
+            } else if (loader == "neoforge") {
+                requires("geckolib")
             }
         }
 
@@ -57,6 +62,11 @@ fun Project.configurePublishing() {
             this.changelog.set(changelogProvider)
             changelogType.set("markdown")
             if (loader == "fabric") {
+                requires("fabric-api")
+                optional("modmenu")
+                requires("geckolib")
+            } else if (loader == "neoforge") {
+                requires("geckolib")
             }
         }
     }

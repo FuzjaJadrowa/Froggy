@@ -17,8 +17,8 @@ public class FroggyConfig {
     public static int weightJumpscare = 60;
     public static int weightBored = 10;
 
-    public static int minSpawnRate = 24000;
-    public static int maxRandomAdded = 12000;
+    public static int minSpawnRate = 12000;
+    public static int maxRandomAdded = 8000;
     
     public static int sleepingCheckInterval = 1200;
     public static double sleepingSpawnChance = 0.10;
