@@ -1,5 +1,19 @@
 {
   "entity.froggy.froggy_stalker": "Żabiec Stalker",
   "entity.froggy.froggy_jumpscare": "Żabiec Jumpscare",
-  "entity.froggy.froggy_sleeping": "Żabiec Śpioch"
+  "entity.froggy.froggy_sleeping": "Żabiec Śpioch",
+  "entity.froggy.froggy_bored": "Żabiec Znudzony",
+  "item.froggy.cough_syrup": "Syrop na kaszel",
+  "tts.froggy.bored": "Znudziło mi się",
+  "gui.froggy.cough_syrup.title": "Syrop na kaszel",
+  "gui.froggy.cough_syrup.question": "Kaszel suchy czy mokry?",
+  "gui.froggy.cough_syrup.dry": "Suchy",
+  "gui.froggy.cough_syrup.wet": "Mokry",
+  "subtitles.froggy.scream1": "Żabiec krzyczy",
+  "subtitles.froggy.scream2": "Żabiec krzyczy",
+  "subtitles.froggy.scream3": "Żabiec krzyczy",
+  "subtitles.froggy.sleeping": "Żabiec chrapie",
+  "subtitles.froggy.walk": "Żabiec kroczy",
+  "subtitles.froggy.fart": "Żabiec pierdzi",
+  "subtitles.froggy.yippe": "Żabiec cieszy się"
 }

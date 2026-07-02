@@ -1,5 +1,19 @@
 {
   "entity.froggy.froggy_stalker": "Froggy Stalker",
   "entity.froggy.froggy_jumpscare": "Froggy Jumpscare",
-  "entity.froggy.froggy_sleeping": "Sleeping Froggy"
+  "entity.froggy.froggy_sleeping": "Sleeping Froggy",
+  "entity.froggy.froggy_bored": "Bored Froggy",
+  "item.froggy.cough_syrup": "Cough Syrup",
+  "tts.froggy.bored": "I got bored",
+  "gui.froggy.cough_syrup.title": "Cough Syrup",
+  "gui.froggy.cough_syrup.question": "Dry or wet cough?",
+  "gui.froggy.cough_syrup.dry": "Dry",
+  "gui.froggy.cough_syrup.wet": "Wet",
+  "subtitles.froggy.scream1": "Froggy screams",
+  "subtitles.froggy.scream2": "Froggy screams",
+  "subtitles.froggy.scream3": "Froggy screams",
+  "subtitles.froggy.sleeping": "Froggy snoring",
+  "subtitles.froggy.walk": "Froggy steps",
+  "subtitles.froggy.fart": "Froggy farts",
+  "subtitles.froggy.yippe": "Froggy yippees"
 }

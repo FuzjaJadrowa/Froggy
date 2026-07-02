@@ -6,6 +6,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -64,6 +65,13 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
 
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack itemStack = player.getItemInHand(hand);
+        if (this.entityData.get(EFFECT_STATE) == 0) {
+            if (itemStack.is(pl.fuzjajadrowa.froggy.item.FroggyItems.COUGH_SYRUP.get()) ||
+                itemStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+                return super.mobInteract(player, hand);
+            }
+        }
         if (!this.isScreaming() && !this.level().isClientSide()) {
             wakeUp(player);
             return InteractionResult.SUCCESS;
@@ -73,7 +81,7 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
 
     private void wakeUp(Player player) {
         this.setScreaming(true);
-        this.disappearTimer = 80;
+        this.disappearTimer = 40;
 
         for (ServerPlayer serverPlayer : this.level().getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(32.0))) {
             serverPlayer.connection.send(new ClientboundStopSoundPacket(FroggySounds.SLEEPING.get().getLocation(), SoundSource.NEUTRAL));

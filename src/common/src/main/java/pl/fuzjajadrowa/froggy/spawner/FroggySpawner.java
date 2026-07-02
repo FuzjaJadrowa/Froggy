@@ -19,6 +19,7 @@ import pl.fuzjajadrowa.froggy.entity.FroggyEntities;
 import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
+import pl.fuzjajadrowa.froggy.entity.FroggyBoredEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.WeakHashMap;
 public class FroggySpawner {
     private static final WeakHashMap<ServerPlayer, Integer> spawnCooldowns = new WeakHashMap<>();
     private static final WeakHashMap<ServerPlayer, Integer> sleepingCheckCooldowns = new WeakHashMap<>();
+    private static int totalOtherSpawns = 0;
 
     public static void tickPlayer(ServerPlayer player) {
         if (player.isSpectator() || player.isCreative()) {
@@ -63,12 +65,52 @@ public class FroggySpawner {
     }
 
     private static boolean trySpawnAmbientFroggy(ServerPlayer player, ServerLevel level) {
-        double roll = player.getRandom().nextDouble();
-        if (roll < 0.60) {
+        net.minecraft.util.RandomSource random = player.getRandom();
+
+        // 10% chance to spawn Bored (making it rader than Jumpscare/Stalker)
+        if (totalOtherSpawns >= 3 && random.nextDouble() < 0.10) {
+            if (trySpawnBored(player, level)) {
+                return true;
+            }
+        }
+
+        // 60% Jumpscare, 40% Stalker
+        if (random.nextDouble() < 0.60) {
             return trySpawnJumpscare(player, level);
         } else {
             return trySpawnStalker(player, level);
         }
+    }
+
+    private static boolean trySpawnBored(ServerPlayer player, ServerLevel level) {
+        net.minecraft.util.RandomSource random = player.getRandom();
+        Vec3 playerPos = player.position();
+        Vec3 look = player.getViewVector(1.0F);
+
+        for (int i = 0; i < 30; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double distance = 6.0 + random.nextDouble() * 6.0;
+            double x = playerPos.x + Math.cos(angle) * distance;
+            double z = playerPos.z + Math.sin(angle) * distance;
+
+            BlockPos spawnPos = new BlockPos((int) x, (int) playerPos.y, (int) z);
+            spawnPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawnPos);
+
+            if (isValidSpawnSpot(level, spawnPos, player, true)) {
+                Vec3 toSpawn = new Vec3(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5).subtract(playerPos).normalize();
+                double dot = look.dot(toSpawn);
+
+                if (dot > 0.7) {
+                    FroggyBoredEntity bored = FroggyEntities.BORED.get().create(level);
+                    if (bored != null) {
+                        bored.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
+                        level.addFreshEntity(bored);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean trySpawnStalker(ServerPlayer player, ServerLevel level) {
@@ -89,6 +131,7 @@ public class FroggySpawner {
                 if (stalker != null) {
                     stalker.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
                     level.addFreshEntity(stalker);
+                    totalOtherSpawns++;
                     return true;
                 }
             }
@@ -119,6 +162,7 @@ public class FroggySpawner {
                     if (jumpscare != null) {
                         jumpscare.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
                         level.addFreshEntity(jumpscare);
+                        totalOtherSpawns++;
                         return true;
                     }
                 }
@@ -192,6 +236,7 @@ public class FroggySpawner {
                     sleeping.setYBodyRot(yaw);
                     sleeping.setYHeadRot(yaw);
                     level.addFreshEntity(sleeping);
+                    totalOtherSpawns++;
                 }
             }
         }

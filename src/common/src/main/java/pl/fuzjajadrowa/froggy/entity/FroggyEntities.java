@@ -7,4 +7,5 @@ public class FroggyEntities {
     public static Supplier<EntityType<FroggyStalkerEntity>> STALKER;
     public static Supplier<EntityType<FroggyJumpscareEntity>> JUMPSCARE;
     public static Supplier<EntityType<FroggySleepingEntity>> SLEEPING;
+    public static Supplier<EntityType<FroggyBoredEntity>> BORED;
 }

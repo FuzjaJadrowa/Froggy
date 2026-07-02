@@ -1,27 +1,44 @@
 {
   "scream1": {
+    "subtitle": "subtitles.froggy.scream1",
     "sounds": [
       "froggy:scream1"
     ]
   },
   "scream2": {
+    "subtitle": "subtitles.froggy.scream2",
     "sounds": [
       "froggy:scream2"
     ]
   },
   "scream3": {
+    "subtitle": "subtitles.froggy.scream3",
     "sounds": [
       "froggy:scream3"
     ]
   },
   "sleeping": {
+    "subtitle": "subtitles.froggy.sleeping",
     "sounds": [
       "froggy:sleeping"
     ]
   },
   "walk": {
+    "subtitle": "subtitles.froggy.walk",
     "sounds": [
       "froggy:walk"
+    ]
+  },
+  "fart": {
+    "subtitle": "subtitles.froggy.fart",
+    "sounds": [
+      "froggy:fart"
+    ]
+  },
+  "yippe": {
+    "subtitle": "subtitles.froggy.yippe",
+    "sounds": [
+      "froggy:yippe"
     ]
   }
 }
