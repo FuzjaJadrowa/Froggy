@@ -39,6 +39,11 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
             return;
         }
 
+        if (this.entityData.get(EFFECT_STATE) != 0) {
+            this.setScreaming(false);
+            return;
+        }
+
         Player player = this.level().getNearestPlayer(this, 30.0);
         if (player == null || player.isSpectator()) {
             if (this.tickCount > 60) {

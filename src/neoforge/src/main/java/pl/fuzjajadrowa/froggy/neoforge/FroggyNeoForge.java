@@ -65,7 +65,7 @@ public final class FroggyNeoForge {
     public static final DeferredHolder<Item, Item> COUGH_SYRUP = ITEMS.register("cough_syrup",
             () -> new Item(new Item.Properties().stacksTo(1)));
 
-    public FroggyNeoForge(IEventBus modEventBus) {
+    public FroggyNeoForge(IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
         Froggy.init();
 
         SOUNDS.register(modEventBus);
@@ -91,11 +91,28 @@ public final class FroggyNeoForge {
             pl.fuzjajadrowa.froggy.network.FroggyPacketSender.sender = (entityId, isCorrect) -> {
                 net.neoforged.neoforge.network.PacketDistributor.sendToServer(new pl.fuzjajadrowa.froggy.network.FroggyCoughSyrupPayload(entityId, isCorrect));
             };
+            ClientSetup.registerConfigScreen(modContainer);
+        }
+    }
+
+    private static class ClientSetup {
+        public static void registerConfigScreen(net.neoforged.fml.ModContainer modContainer) {
+            modContainer.registerExtensionPoint(
+                net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
+                (container, parent) -> new pl.fuzjajadrowa.froggy.client.FroggyConfigScreen(parent)
+            );
         }
     }
 
     @EventBusSubscriber(modid = Froggy.MOD_ID)
     public static class ModEvents {
+        @SubscribeEvent
+        public static void buildContents(net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent event) {
+            if (event.getTabKey() == net.minecraft.world.item.CreativeModeTabs.FOOD_AND_DRINKS) {
+                event.accept(COUGH_SYRUP.get());
+            }
+        }
+
         @SubscribeEvent
         public static void registerAttributes(EntityAttributeCreationEvent event) {
             event.put(FROGGY_STALKER.get(), FroggyStalkerEntity.createAttributes().build());

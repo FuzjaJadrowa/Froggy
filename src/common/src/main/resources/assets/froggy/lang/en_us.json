@@ -15,5 +15,11 @@
   "subtitles.froggy.sleeping": "Froggy snoring",
   "subtitles.froggy.walk": "Froggy steps",
   "subtitles.froggy.fart": "Froggy farts",
-  "subtitles.froggy.yippe": "Froggy yippees"
+  "subtitles.froggy.yippe": "Froggy yippees",
+  "gui.froggy.config.title": "Froggy Mod Config",
+  "gui.froggy.config.stalker": "Stalker Spawn",
+  "gui.froggy.config.jumpscare": "Jumpscare Spawn",
+  "gui.froggy.config.sleeping": "Sleeping Spawn",
+  "gui.froggy.config.bored": "Bored Spawn",
+  "gui.froggy.config.save": "Save & Close"
 }

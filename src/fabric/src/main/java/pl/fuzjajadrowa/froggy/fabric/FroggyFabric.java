@@ -108,6 +108,10 @@ public final class FroggyFabric implements ModInitializer, ClientModInitializer 
 
         FroggyItems.COUGH_SYRUP = () -> COUGH_SYRUP;
 
+        net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents.modifyEntriesEvent(net.minecraft.world.item.CreativeModeTabs.FOOD_AND_DRINKS).register(entries -> {
+            entries.accept(COUGH_SYRUP);
+        });
+
         FabricDefaultAttributeRegistry.register(FROGGY_STALKER, FroggyStalkerEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(FROGGY_JUMPSCARE, FroggyJumpscareEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(FROGGY_SLEEPING, FroggySleepingEntity.createAttributes());

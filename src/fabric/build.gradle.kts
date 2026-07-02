@@ -23,6 +23,7 @@ sourceSets {
 
 repositories {
     maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
+    maven("https://maven.terraformersmc.com/releases/")
 }
 
 dependencies {
@@ -33,6 +34,9 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${mod.dep("fabric_api_version")}")
     modImplementation("software.bernie.geckolib:geckolib-fabric-1.21.1:${mod.dep("geckolib_version")}")
+    
+    modCompileOnly("com.terraformersmc:modmenu:${mod.dep("modmenu_version")}")
+    modLocalRuntime("com.terraformersmc:modmenu:${mod.dep("modmenu_version")}")
 }
 
 val requiredJava = JavaVersion.toVersion(mod.prop("java_version"))

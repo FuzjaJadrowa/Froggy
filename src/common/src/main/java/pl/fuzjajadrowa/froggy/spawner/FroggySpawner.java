@@ -20,6 +20,7 @@ import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyBoredEntity;
+import pl.fuzjajadrowa.froggy.config.FroggyConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,49 +38,64 @@ public class FroggySpawner {
 
         ServerLevel level = player.serverLevel();
 
-        int cooldown = spawnCooldowns.computeIfAbsent(player, p -> getRandomCooldown(player.getRandom()));
-        cooldown--;
-        if (cooldown <= 0) {
-            boolean spawned = trySpawnAmbientFroggy(player, level);
-            if (spawned) {
-                spawnCooldowns.put(player, getRandomCooldown(player.getRandom()));
+        if (FroggyConfig.spawnStalker || FroggyConfig.spawnJumpscare || FroggyConfig.spawnBored) {
+            int cooldown = spawnCooldowns.computeIfAbsent(player, p -> getRandomCooldown(player.getRandom()));
+            cooldown--;
+            if (cooldown <= 0) {
+                boolean spawned = trySpawnAmbientFroggy(player, level);
+                if (spawned) {
+                    spawnCooldowns.put(player, getRandomCooldown(player.getRandom()));
+                } else {
+                    spawnCooldowns.put(player, 1000);
+                }
             } else {
-                spawnCooldowns.put(player, 1000);
+                spawnCooldowns.put(player, cooldown);
             }
-        } else {
-            spawnCooldowns.put(player, cooldown);
         }
 
-        int sleepCooldown = sleepingCheckCooldowns.computeIfAbsent(player, p -> 1200);
-        sleepCooldown--;
-        if (sleepCooldown <= 0) {
-            trySpawnSleepingFroggy(player, level);
-            sleepingCheckCooldowns.put(player, 1200);
-        } else {
-            sleepingCheckCooldowns.put(player, sleepCooldown);
+        if (FroggyConfig.spawnSleeping) {
+            int sleepCooldown = sleepingCheckCooldowns.computeIfAbsent(player, p -> FroggyConfig.sleepingCheckInterval);
+            sleepCooldown--;
+            if (sleepCooldown <= 0) {
+                trySpawnSleepingFroggy(player, level);
+                sleepingCheckCooldowns.put(player, FroggyConfig.sleepingCheckInterval);
+            } else {
+                sleepingCheckCooldowns.put(player, sleepCooldown);
+            }
         }
     }
 
     private static int getRandomCooldown(net.minecraft.util.RandomSource random) {
-        return 24000 + random.nextInt(12000);
+        int min = FroggyConfig.minSpawnRate;
+        int maxRandom = FroggyConfig.maxRandomAdded;
+        return min + (maxRandom > 0 ? random.nextInt(maxRandom) : 0);
     }
 
     private static boolean trySpawnAmbientFroggy(ServerPlayer player, ServerLevel level) {
         net.minecraft.util.RandomSource random = player.getRandom();
 
-        // 10% chance to spawn Bored (making it rader than Jumpscare/Stalker)
-        if (totalOtherSpawns >= 3 && random.nextDouble() < 0.10) {
-            if (trySpawnBored(player, level)) {
-                return true;
-            }
+        List<String> pool = new ArrayList<>();
+        if (FroggyConfig.spawnStalker && FroggyConfig.weightStalker > 0) {
+            for (int i = 0; i < FroggyConfig.weightStalker; i++) pool.add("stalker");
+        }
+        if (FroggyConfig.spawnJumpscare && FroggyConfig.weightJumpscare > 0) {
+            for (int i = 0; i < FroggyConfig.weightJumpscare; i++) pool.add("jumpscare");
+        }
+        if (FroggyConfig.spawnBored && FroggyConfig.weightBored > 0 && totalOtherSpawns >= 3) {
+            for (int i = 0; i < FroggyConfig.weightBored; i++) pool.add("bored");
         }
 
-        // 60% Jumpscare, 40% Stalker
-        if (random.nextDouble() < 0.60) {
-            return trySpawnJumpscare(player, level);
-        } else {
-            return trySpawnStalker(player, level);
+        if (pool.isEmpty()) {
+            return false;
         }
+
+        String chosen = pool.get(random.nextInt(pool.size()));
+        return switch (chosen) {
+            case "stalker" -> trySpawnStalker(player, level);
+            case "jumpscare" -> trySpawnJumpscare(player, level);
+            case "bored" -> trySpawnBored(player, level);
+            default -> false;
+        };
     }
 
     private static boolean trySpawnBored(ServerPlayer player, ServerLevel level) {
@@ -218,7 +234,7 @@ public class FroggySpawner {
         }
 
         net.minecraft.util.RandomSource random = player.getRandom();
-        if (random.nextDouble() < 0.10) {
+        if (random.nextDouble() < FroggyConfig.sleepingSpawnChance) {
             BlockPos bedPos = beds.get(random.nextInt(beds.size()));
             BlockState bedState = level.getBlockState(bedPos);
             

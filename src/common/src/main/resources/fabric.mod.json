@@ -21,6 +21,9 @@
     ],
     "client": [
       "pl.fuzjajadrowa.froggy.fabric.FroggyFabric"
+    ],
+    "modmenu": [
+      "pl.fuzjajadrowa.froggy.fabric.FroggyModMenu"
     ]
   },
   "depends": {

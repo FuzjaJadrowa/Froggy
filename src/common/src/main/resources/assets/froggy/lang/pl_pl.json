@@ -15,5 +15,11 @@
   "subtitles.froggy.sleeping": "Żabiec chrapie",
   "subtitles.froggy.walk": "Żabiec kroczy",
   "subtitles.froggy.fart": "Żabiec pierdzi",
-  "subtitles.froggy.yippe": "Żabiec cieszy się"
+  "subtitles.froggy.yippe": "Żabiec cieszy się",
+  "gui.froggy.config.title": "Konfiguracja Modu Froggy",
+  "gui.froggy.config.stalker": "Spawn Stalkera",
+  "gui.froggy.config.jumpscare": "Spawn Jumpscare",
+  "gui.froggy.config.sleeping": "Spawn Śpiocha",
+  "gui.froggy.config.bored": "Spawn Znudzonego",
+  "gui.froggy.config.save": "Zapisz i Zamknij"
 }

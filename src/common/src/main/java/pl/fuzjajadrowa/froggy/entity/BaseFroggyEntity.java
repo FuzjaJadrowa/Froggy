@@ -107,14 +107,20 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         if (!(this instanceof FroggyStalkerEntity) && this.entityData.get(EFFECT_STATE) == 0) {
             // Check cough syrup interaction
             if (itemStack.is(pl.fuzjajadrowa.froggy.item.FroggyItems.COUGH_SYRUP.get())) {
-                if (!this.level().isClientSide()) {
-                    this.useCoughSyrup(player, hand);
+                this.setScreaming(false);
+                if (this.level().isClientSide()) {
+                    this.openCoughSyrupScreen();
+                } else {
+                    if (!player.getAbilities().instabuild) {
+                        itemStack.shrink(1);
+                    }
                 }
                 return InteractionResult.sidedSuccess(this.level().isClientSide());
             }
 
             // Check food interaction
             if (itemStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+                this.setScreaming(false);
                 if (!this.level().isClientSide()) {
                     this.feed(player, hand);
                 }
@@ -132,6 +138,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         }
         this.entityData.set(EFFECT_STATE, 1);
         this.entityData.set(EFFECT_TIMER, 80); // 4 seconds
+        this.setScreaming(false);
         this.navigation.stop();
         this.setDeltaMovement(Vec3.ZERO);
 
@@ -142,16 +149,6 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         if (this.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE, this.getX(), this.getY() + 0.2, this.getZ(), 5, 0.2, 0.1, 0.2, 0.02);
             serverLevel.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.4f, 0.25f, 0.1f), 1.5f), this.getX(), this.getY() + 0.2, this.getZ(), 15, 0.2, 0.2, 0.2, 0.05);
-        }
-    }
-
-    public void useCoughSyrup(Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (!player.getAbilities().instabuild) {
-            stack.shrink(1);
-        }
-        if (this.level().isClientSide()) {
-            openCoughSyrupScreen();
         }
     }
 
@@ -177,6 +174,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
             return; // Already has an effect
         }
 
+        this.setScreaming(false);
         if (isCorrect) {
             this.entityData.set(EFFECT_STATE, 2);
             this.entityData.set(EFFECT_TIMER, 100); // 5 seconds
@@ -224,7 +222,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "controller", 2, event -> {
             int state = this.entityData.get(EFFECT_STATE);
-            if (state == 2 || this.isScreaming()) {
+            if (this.isScreaming()) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("scream"));
             }
 

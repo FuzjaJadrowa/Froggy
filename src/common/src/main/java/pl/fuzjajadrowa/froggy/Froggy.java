@@ -7,5 +7,6 @@ public final class Froggy {
     }
 
     public static void init() {
+        pl.fuzjajadrowa.froggy.config.FroggyConfig.load();
     }
 }
