@@ -9,7 +9,7 @@ version = "${mod.version}+${mod.prop("mc_title")}"
 group = mod.group
 
 base {
-    archivesName.set("${mod.name}-fabric-${version}")
+    archivesName.set("${mod.name}-fabric")
 }
 
 sourceSets {

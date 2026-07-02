@@ -9,7 +9,7 @@ version = "${mod.version}+${mod.prop("mc_title")}"
 group = mod.group
 
 base {
-    archivesName.set("${mod.name}-neoforge-${version}")
+    archivesName.set("${mod.name}-neoforge")
 }
 
 sourceSets {

@@ -39,9 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: template-fabric
-          path: src/fabric/build/libs/*.jar
-          # Exclude source and dev jars
-          pattern: |
+          path: |
             src/fabric/build/libs/*.jar
             !src/fabric/build/libs/*-sources.jar
             !src/fabric/build/libs/*-dev.jar
@@ -52,8 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: template-neoforge
-          path: src/neoforge/build/libs/*.jar
-          pattern: |
+          path: |
             src/neoforge/build/libs/*.jar
             !src/neoforge/build/libs/*-sources.jar
             !src/neoforge/build/libs/*-dev.jar
