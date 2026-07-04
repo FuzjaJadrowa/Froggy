@@ -27,8 +27,13 @@ public class FroggyConfigScreen extends Screen {
     protected void init() {
         super.init();
 
+//? if >=1.21.1 {
         int listHeight = this.height - 90;
         this.list = new ConfigList(this.minecraft, this.width, listHeight, 50, 25);
+//?} else {
+/*        this.list = new ConfigList(this.minecraft, this.width, this.height, 50, this.height - 40, 25);
+*/
+//?}
         this.addRenderableWidget(this.list);
 
         // 1. Stalker Spawn Toggle
@@ -131,7 +136,12 @@ public class FroggyConfigScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+//? if >=1.21.1 {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+//?} else {
+/*        this.renderBackground(guiGraphics);
+*/
+//?}
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFFFF);
@@ -146,9 +156,16 @@ public class FroggyConfigScreen extends Screen {
     }
 
     private final class ConfigList extends ContainerObjectSelectionList<ConfigList.Entry> {
+//? if >=1.21.1 {
         public ConfigList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
             super(minecraft, width, height, y, itemHeight);
         }
+//?} else {
+/*        public ConfigList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
+        }
+*/
+//?}
 
         public void clearList() {
             this.clearEntries();

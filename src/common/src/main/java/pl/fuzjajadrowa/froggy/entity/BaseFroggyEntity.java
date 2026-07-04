@@ -35,6 +35,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         this.noPhysics = false;
     }
 
+//? if >=1.21.1 {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -42,6 +43,16 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         builder.define(EFFECT_STATE, 0);
         builder.define(EFFECT_TIMER, 0);
     }
+//?} else {
+/*    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(SCREAMING, false);
+        this.entityData.define(EFFECT_STATE, 0);
+        this.entityData.define(EFFECT_TIMER, 0);
+    }
+*/
+//?}
 
     public boolean isScreaming() {
         return this.entityData.get(SCREAMING);
@@ -119,7 +130,12 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
             }
 
             // Check food interaction
+//? if >=1.21.1 {
             if (itemStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+//?} else {
+/*            if (itemStack.getItem().isEdible()) {
+*/
+//?}
                 this.setScreaming(false);
                 if (!this.level().isClientSide()) {
                     this.feed(player, hand);

@@ -11,19 +11,20 @@ import org.gradle.kotlin.dsl.named
 private const val MODRINTH_PROJECT_ID_PROPERTY = "publish.modrinth.project_id"
 private const val CURSEFORGE_PROJECT_ID_PROPERTY = "publish.curseforge.project_id"
 
-fun Project.configurePublishing() {
+fun Project.configureModPublishing() {
     configureRootGithubPublishing()
 
-    val loader = name
+    val loader = name.substringAfterLast('-')
+    val target = name.substringBeforeLast('-')
     val loaderTitle = loader.upperCaseFirst()
     val minecraftTitle = mod.prop("mc_title")
     val minecraftTargets = mod.prop("mc_targets")
     val releaseDisplayName = "Release ${mod.version} for $loaderTitle $minecraftTitle"
-    
+
     val fallbackMinecraft = mod.dep("minecraft.$loader")
     val supportedMinecraftVersions = publishedMinecraftVersions(minecraftTargets, fallbackMinecraft)
-
-    val changelogFile = rootProject.layout.projectDirectory.file(".github/changelogs/$loader-changelog.md")
+    
+    val changelogFile = rootProject.layout.projectDirectory.file(".github/changelogs/$target-$loader-changelog.md")
     val changelogProvider = if (changelogFile.asFile.exists()) {
         providers.fileContents(changelogFile).asText
     } else {
@@ -44,11 +45,7 @@ fun Project.configurePublishing() {
             accessToken.set(providers.environmentVariable("MODRINTH_API_KEY"))
             projectId.set(providerPropertyOrEnvironment(MODRINTH_PROJECT_ID_PROPERTY, "MODRINTH_PROJECT_ID"))
             configureMinecraftVersions(supportedMinecraftVersions)
-            if (loader == "fabric") {
-                requires("fabric-api")
-                requires("geckolib")
-                optional("modmenu")
-            } else if (loader == "neoforge") {
+            if (loader == "neoforge" || loader == "forge") {
                 requires("geckolib")
             }
         }
@@ -61,11 +58,7 @@ fun Project.configurePublishing() {
             serverRequired.set(true)
             this.changelog.set(changelogProvider)
             changelogType.set("markdown")
-            if (loader == "fabric") {
-                requires("fabric-api")
-                optional("modmenu")
-                requires("geckolib")
-            } else if (loader == "neoforge") {
+            if (loader == "neoforge" || loader == "forge") {
                 requires("geckolib")
             }
         }
@@ -73,7 +66,7 @@ fun Project.configurePublishing() {
 }
 
 private fun Project.configureRootGithubPublishing() {
-    val configuredMarker = "multiloadertemplate.publish.root_configured"
+    val configuredMarker = "froggy.publish.root_configured"
     if (rootProject.extensions.extraProperties.has(configuredMarker)) {
         return
     }
@@ -123,34 +116,32 @@ private fun Project.configureRootGithubPublishing() {
     }
     val buildAllVersionedMods = rootProject.tasks.register("buildAllVersionedMods") {
         group = "build"
-        description = "Builds all loader subprojects."
+        description = "Builds all versioned mod projects."
     }
 
     rootProject.gradle.projectsEvaluated {
-        val loaderProjects = rootProject.subprojects
-            .filter { it.name == "fabric" || it.name == "neoforge" }
+        val releaseFiles = rootProject.subprojects
             .sortedBy { it.name }
-
-        if (loaderProjects.isNotEmpty()) {
-            val releaseFiles = loaderProjects.map { project ->
-                val loader = project.name
+            .map { project ->
+                val loader = project.name.substringAfterLast('-')
                 project.tasks.named<AbstractArchiveTask>(project.publishJarTaskName(loader)).flatMap { it.archiveFile }
             }
 
+        if (releaseFiles.isNotEmpty()) {
             rootProject.extensions.configure<ModPublishExtension>("publishMods") {
                 file.set(releaseFiles.first())
                 additionalFiles.from(releaseFiles.drop(1))
             }
         }
 
-        val subprojectBuilds = loaderProjects.map { it.tasks.named("build") }
-        val subprojectPublishTasks = loaderProjects.map { it.tasks.named("publishMods") }
+        val subprojectBuilds = rootProject.subprojects.map { it.tasks.named("build") }
+        val subprojectPublishTasks = rootProject.subprojects.map { it.tasks.named("publishMods") }
 
         validatePublishTargets.configure {
             doLast {
-                loaderProjects.forEach { project ->
+                rootProject.subprojects.sortedBy { it.name }.forEach { project ->
                     val targets = project.mod.prop("mc_targets")
-                    val loader = project.name
+                    val loader = project.name.substringAfterLast('-')
                     val versions = publishedMinecraftVersions(targets, project.mod.dep("minecraft.$loader"))
                     require(versions.isNotEmpty()) {
                         "${project.path}: unsupported mod.mc_targets '$targets'."
@@ -183,7 +174,9 @@ private fun Project.configureRootGithubPublishing() {
 }
 
 private fun Project.publishJarTaskName(loader: String): String {
-    return if (tasks.names.contains("remapJar")) {
+    return if (loader == "fabric" && tasks.names.contains("remapJar")) {
+        "remapJar"
+    } else if (tasks.names.contains("remapJar")) {
         "remapJar"
     } else {
         "jar"

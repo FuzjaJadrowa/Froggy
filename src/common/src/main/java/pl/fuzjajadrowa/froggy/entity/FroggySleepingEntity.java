@@ -68,7 +68,12 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
         ItemStack itemStack = player.getItemInHand(hand);
         if (this.entityData.get(EFFECT_STATE) == 0) {
             if (itemStack.is(pl.fuzjajadrowa.froggy.item.FroggyItems.COUGH_SYRUP.get()) ||
+//? if >=1.21.1 {
                 itemStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+//?} else {
+/*                itemStack.getItem().isEdible()) {
+*/
+//?}
                 return super.mobInteract(player, hand);
             }
         }

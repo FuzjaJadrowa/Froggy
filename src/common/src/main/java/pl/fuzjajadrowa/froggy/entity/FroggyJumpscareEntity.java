@@ -54,7 +54,7 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
 
         switch (this.state) {
             case STATE_APPROACHING:
-                this.navigation.moveTo(player, 0.5);
+                this.navigation.moveTo(player, 1.2);
                 this.approachTimer++;
                 
                 double distSq = this.distanceToSqr(player);

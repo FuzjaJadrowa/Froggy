@@ -42,7 +42,12 @@ public class CoughSyrupScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.isRendering = true;
+//? if >=1.21.1 {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+//?} else {
+/*        this.renderBackground(guiGraphics);
+*/
+//?}
         this.isRendering = false;
         
         int x = (this.width - 176) / 2;
@@ -57,10 +62,20 @@ public class CoughSyrupScreen extends Screen {
         guiGraphics.drawString(this.font, questionText, this.width / 2 - textWidth / 2, y + 25, 4210752, false);
     }
 
+//? if >=1.21.1 {
     @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (this.isRendering) {
             super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         }
     }
+//?} else {
+/*    @Override
+    public void renderBackground(GuiGraphics guiGraphics) {
+        if (this.isRendering) {
+            super.renderBackground(guiGraphics);
+        }
+    }
+*/
+//?}
 }

@@ -49,8 +49,7 @@ public class FroggyBoredEntity extends BaseFroggyEntity {
         if (distSq <= 6.25 || this.approachTimer > 160) {
             if (!spoken) {
                 spoken = true;
-                this.approachTimer = 0; // Reuse as ticks elapsed since speaking
-                // Broadcast entity event 60 to play the TTS on the client
+                this.approachTimer = 0;
                 this.level().broadcastEntityEvent(this, (byte) 60);
             }
         }

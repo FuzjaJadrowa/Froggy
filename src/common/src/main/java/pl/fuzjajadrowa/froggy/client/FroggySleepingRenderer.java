@@ -11,9 +11,16 @@ public class FroggySleepingRenderer extends GeoEntityRenderer<FroggySleepingEnti
         super(renderManager, new FroggyModel<>());
     }
 
+//? if >=1.21.1 {
     @Override
     protected void applyRotations(FroggySleepingEntity entity, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTick, float nativeScale) {
         super.applyRotations(entity, poseStack, ageInTicks, rotationYaw, partialTick, nativeScale);
+//?} else {
+/*    @Override
+    protected void applyRotations(FroggySleepingEntity entity, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTick) {
+        super.applyRotations(entity, poseStack, ageInTicks, rotationYaw, partialTick);
+*/
+//?}
 
         if (!entity.isScreaming()) {
             poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));

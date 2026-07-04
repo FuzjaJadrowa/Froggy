@@ -116,13 +116,17 @@ public class FroggyStalkerEntity extends BaseFroggyEntity {
     private void teleportInFrontOfPlayer(Player player) {
         Vec3 look = player.getViewVector(1.0F);
         Vec3 targetPosVec = player.position().add(look.x * 10, 0, look.z * 10);
-        
+//? if >=1.21.1 {
         BlockPos targetPos = BlockPos.containing(targetPosVec.x, player.getY(), targetPosVec.z);
+//?} else {
+/*        BlockPos targetPos = new BlockPos((int) targetPosVec.x, (int) player.getY(), (int) targetPosVec.z);
+*/
+//?}
         BlockPos safePos = null;
         
         for (int dy : new int[]{0, 1, -1, 2, -2, 3, -3}) {
             BlockPos checkPos = targetPos.offset(0, dy, 0);
-            if (this.level().getBlockState(checkPos.below()).isSolid() && 
+            if (this.level().getBlockState(checkPos.below()).isFaceSturdy(this.level(), checkPos.below(), net.minecraft.core.Direction.UP) && 
                 this.level().getBlockState(checkPos).isAir() && 
                 this.level().getBlockState(checkPos.above()).isAir()) {
                 safePos = checkPos;

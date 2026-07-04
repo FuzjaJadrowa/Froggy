@@ -29,6 +29,7 @@ import java.util.WeakHashMap;
 public class FroggySpawner {
     private static final WeakHashMap<ServerPlayer, Integer> spawnCooldowns = new WeakHashMap<>();
     private static final WeakHashMap<ServerPlayer, Integer> sleepingCheckCooldowns = new WeakHashMap<>();
+    private static final WeakHashMap<ServerPlayer, Integer> consecutiveFailures = new WeakHashMap<>();
     private static int totalOtherSpawns = 0;
 
     public static void tickPlayer(ServerPlayer player) {
@@ -45,8 +46,16 @@ public class FroggySpawner {
                 boolean spawned = trySpawnAmbientFroggy(player, level);
                 if (spawned) {
                     spawnCooldowns.put(player, getRandomCooldown(player.getRandom()));
+                    consecutiveFailures.put(player, 0);
                 } else {
-                    spawnCooldowns.put(player, 1000);
+                    int fails = consecutiveFailures.getOrDefault(player, 0) + 1;
+                    if (fails >= 30) {
+                        spawnCooldowns.put(player, getRandomCooldown(player.getRandom()));
+                        consecutiveFailures.put(player, 0);
+                    } else {
+                        spawnCooldowns.put(player, 200);
+                        consecutiveFailures.put(player, fails);
+                    }
                 }
             } else {
                 spawnCooldowns.put(player, cooldown);
@@ -72,6 +81,16 @@ public class FroggySpawner {
     }
 
     private static boolean trySpawnAmbientFroggy(ServerPlayer player, ServerLevel level) {
+        boolean alreadyHasAmbient = !level.getEntitiesOfClass(
+            net.minecraft.world.entity.Mob.class,
+            player.getBoundingBox().inflate(128.0),
+            entity -> entity instanceof FroggyStalkerEntity || entity instanceof FroggyJumpscareEntity || entity instanceof FroggyBoredEntity
+        ).isEmpty();
+
+        if (alreadyHasAmbient) {
+            return false;
+        }
+
         net.minecraft.util.RandomSource random = player.getRandom();
 
         List<String> pool = new ArrayList<>();
@@ -98,6 +117,19 @@ public class FroggySpawner {
         };
     }
 
+    private static BlockPos findSpawnY(ServerLevel level, int x, int startY, int z) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, startY + 4, z);
+        for (int i = 0; i < 9; i++) {
+            BlockState state = level.getBlockState(pos);
+            BlockState below = level.getBlockState(pos.below());
+            if (state.isAir() && level.getBlockState(pos.above()).isAir() && below.isFaceSturdy(level, pos.below(), Direction.UP) && !below.is(BlockTags.LEAVES)) {
+                return pos.immutable();
+            }
+            pos.move(Direction.DOWN);
+        }
+        return null;
+    }
+
     private static boolean trySpawnBored(ServerPlayer player, ServerLevel level) {
         net.minecraft.util.RandomSource random = player.getRandom();
         Vec3 playerPos = player.position();
@@ -109,8 +141,8 @@ public class FroggySpawner {
             double x = playerPos.x + Math.cos(angle) * distance;
             double z = playerPos.z + Math.sin(angle) * distance;
 
-            BlockPos spawnPos = new BlockPos((int) x, (int) playerPos.y, (int) z);
-            spawnPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawnPos);
+            BlockPos spawnPos = findSpawnY(level, (int) x, (int) playerPos.y, (int) z);
+            if (spawnPos == null) continue;
 
             if (isValidSpawnSpot(level, spawnPos, player, true)) {
                 Vec3 toSpawn = new Vec3(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5).subtract(playerPos).normalize();
@@ -135,12 +167,12 @@ public class FroggySpawner {
         
         for (int i = 0; i < 30; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double distance = 20.0 + random.nextDouble() * 10.0;
+            double distance = 15.0 + random.nextDouble() * 10.0;
             double x = playerPos.x + Math.cos(angle) * distance;
             double z = playerPos.z + Math.sin(angle) * distance;
             
-            BlockPos spawnPos = new BlockPos((int) x, (int) playerPos.y, (int) z);
-            spawnPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawnPos);
+            BlockPos spawnPos = findSpawnY(level, (int) x, (int) playerPos.y, (int) z);
+            if (spawnPos == null) continue;
             
             if (isValidSpawnSpot(level, spawnPos, player, true)) {
                 FroggyStalkerEntity stalker = FroggyEntities.STALKER.get().create(level);
@@ -162,14 +194,14 @@ public class FroggySpawner {
         
         for (int i = 0; i < 30; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double distance = 4.0 + random.nextDouble() * 4.0;
+            double distance = 3.0 + random.nextDouble() * 2.0;
             double x = playerPos.x + Math.cos(angle) * distance;
             double z = playerPos.z + Math.sin(angle) * distance;
             
-            BlockPos spawnPos = new BlockPos((int) x, (int) playerPos.y, (int) z);
-            spawnPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawnPos);
+            BlockPos spawnPos = findSpawnY(level, (int) x, (int) playerPos.y, (int) z);
+            if (spawnPos == null) continue;
             
-            if (isValidSpawnSpot(level, spawnPos, player, false)) {
+            if (isValidSpawnSpot(level, spawnPos, player, true)) {
                 Vec3 toSpawn = new Vec3(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5).subtract(playerPos).normalize();
                 double dot = look.dot(toSpawn);
                 
@@ -189,25 +221,26 @@ public class FroggySpawner {
 
     private static boolean isValidSpawnSpot(ServerLevel level, BlockPos pos, ServerPlayer player, boolean requireLineOfSight) {
         BlockState belowState = level.getBlockState(pos.below());
-        if (!belowState.isSolid() || belowState.is(BlockTags.LEAVES)) {
+        if (!belowState.isFaceSturdy(level, pos.below(), Direction.UP) || belowState.is(BlockTags.LEAVES)) {
             return false;
         }
         if (!level.getBlockState(pos).isAir() || !level.getBlockState(pos.above()).isAir()) {
             return false;
         }
         
-        Vec3 playerEye = player.getEyePosition();
-        Vec3 spawnEye = new Vec3(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
-        BlockHitResult hitResult = level.clip(new net.minecraft.world.level.ClipContext(
-            playerEye,
-            spawnEye,
-            net.minecraft.world.level.ClipContext.Block.VISUAL,
-            net.minecraft.world.level.ClipContext.Fluid.NONE,
-            player
-        ));
-        boolean hasLineOfSight = hitResult.getType() == net.minecraft.world.phys.HitResult.Type.MISS;
-        
-        return hasLineOfSight;
+        if (requireLineOfSight) {
+            Vec3 playerEye = player.getEyePosition();
+            Vec3 spawnEye = new Vec3(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
+            BlockHitResult hitResult = level.clip(new net.minecraft.world.level.ClipContext(
+                playerEye,
+                spawnEye,
+                net.minecraft.world.level.ClipContext.Block.VISUAL,
+                net.minecraft.world.level.ClipContext.Fluid.NONE,
+                player
+            ));
+            return hitResult.getType() == net.minecraft.world.phys.HitResult.Type.MISS;
+        }
+        return true;
     }
 
     private static void trySpawnSleepingFroggy(ServerPlayer player, ServerLevel level) {
