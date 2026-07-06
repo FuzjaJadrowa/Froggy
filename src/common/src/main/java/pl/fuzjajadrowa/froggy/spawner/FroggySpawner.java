@@ -5,18 +5,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BedPart;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import pl.fuzjajadrowa.froggy.entity.FroggyEntities;
-import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
+import pl.fuzjajadrowa.froggy.registry.FroggyEntities;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyBoredEntity;
@@ -84,7 +79,7 @@ public class FroggySpawner {
         boolean alreadyHasAmbient = !level.getEntitiesOfClass(
             net.minecraft.world.entity.Mob.class,
             player.getBoundingBox().inflate(128.0),
-            entity -> entity instanceof FroggyStalkerEntity || entity instanceof FroggyJumpscareEntity || entity instanceof FroggyBoredEntity
+            entity -> entity instanceof FroggyStalkerEntity || entity instanceof FroggyEntities.FroggyJumpscareEntity || entity instanceof FroggyBoredEntity
         ).isEmpty();
 
         if (alreadyHasAmbient) {
@@ -206,7 +201,7 @@ public class FroggySpawner {
                 double dot = look.dot(toSpawn);
                 
                 if (dot < 0.3) {
-                    FroggyJumpscareEntity jumpscare = FroggyEntities.JUMPSCARE.get().create(level);
+                    FroggyEntities.FroggyJumpscareEntity jumpscare = FroggyEntities.JUMPSCARE.get().create(level);
                     if (jumpscare != null) {
                         jumpscare.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
                         level.addFreshEntity(jumpscare);

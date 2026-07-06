@@ -1,4 +1,4 @@
-package pl.fuzjajadrowa.froggy.sound;
+package pl.fuzjajadrowa.froggy.registry;
 
 import net.minecraft.sounds.SoundEvent;
 import java.util.function.Supplier;

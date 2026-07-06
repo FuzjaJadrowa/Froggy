@@ -1,4 +1,4 @@
-package pl.fuzjajadrowa.froggy.item;
+package pl.fuzjajadrowa.froggy.registry;
 
 import net.minecraft.world.item.Item;
 import java.util.function.Supplier;

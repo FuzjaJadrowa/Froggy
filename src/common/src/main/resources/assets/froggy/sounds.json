@@ -40,5 +40,11 @@
     "sounds": [
       "froggy:yippe"
     ]
+  },
+  "mlem": {
+    "subtitle": "subtitles.froggy.mlem",
+    "sounds": [
+      "froggy:mlem"
+    ]
   }
 }

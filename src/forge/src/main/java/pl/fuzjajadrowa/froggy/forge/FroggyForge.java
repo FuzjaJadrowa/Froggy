@@ -31,8 +31,8 @@ import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyBoredEntity;
-import pl.fuzjajadrowa.froggy.sound.FroggySounds;
-import pl.fuzjajadrowa.froggy.item.FroggyItems;
+import pl.fuzjajadrowa.froggy.registry.FroggySounds;
+import pl.fuzjajadrowa.froggy.registry.FroggyItems;
 import pl.fuzjajadrowa.froggy.spawner.FroggySpawner;
 import pl.fuzjajadrowa.froggy.network.FroggyPackets;
 

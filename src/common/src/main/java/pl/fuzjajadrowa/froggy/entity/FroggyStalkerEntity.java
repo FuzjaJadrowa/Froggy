@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
-import pl.fuzjajadrowa.froggy.sound.FroggySounds;
+import pl.fuzjajadrowa.froggy.registry.FroggySounds;
 
 public class FroggyStalkerEntity extends BaseFroggyEntity {
     private static final int STATE_STALKING = 0;

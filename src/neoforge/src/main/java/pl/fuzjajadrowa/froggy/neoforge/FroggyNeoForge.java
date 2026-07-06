@@ -19,13 +19,12 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import pl.fuzjajadrowa.froggy.Froggy;
 import pl.fuzjajadrowa.froggy.client.FroggyRenderer;
 import pl.fuzjajadrowa.froggy.client.FroggySleepingRenderer;
-import pl.fuzjajadrowa.froggy.entity.FroggyEntities;
-import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
+import pl.fuzjajadrowa.froggy.registry.FroggyEntities;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyBoredEntity;
-import pl.fuzjajadrowa.froggy.sound.FroggySounds;
-import pl.fuzjajadrowa.froggy.item.FroggyItems;
+import pl.fuzjajadrowa.froggy.registry.FroggySounds;
+import pl.fuzjajadrowa.froggy.registry.FroggyItems;
 import pl.fuzjajadrowa.froggy.spawner.FroggySpawner;
 
 @Mod(Froggy.MOD_ID)
@@ -47,8 +46,8 @@ public final class FroggyNeoForge {
                     .sized(0.6f, 1.8f)
                     .build("froggy_stalker"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
-            () -> EntityType.Builder.of(FroggyJumpscareEntity::new, MobCategory.MONSTER)
+    public static final DeferredHolder<EntityType<?>, EntityType<FroggyEntities.FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
+            () -> EntityType.Builder.of(FroggyEntities.FroggyJumpscareEntity::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.8f)
                     .build("froggy_jumpscare"));
 
@@ -116,7 +115,7 @@ public final class FroggyNeoForge {
         @SubscribeEvent
         public static void registerAttributes(EntityAttributeCreationEvent event) {
             event.put(FROGGY_STALKER.get(), FroggyStalkerEntity.createAttributes().build());
-            event.put(FROGGY_JUMPSCARE.get(), FroggyJumpscareEntity.createAttributes().build());
+            event.put(FROGGY_JUMPSCARE.get(), FroggyEntities.FroggyJumpscareEntity.createAttributes().build());
             event.put(FROGGY_SLEEPING.get(), FroggySleepingEntity.createAttributes().build());
             event.put(FROGGY_BORED.get(), FroggyBoredEntity.createAttributes().build());
         }

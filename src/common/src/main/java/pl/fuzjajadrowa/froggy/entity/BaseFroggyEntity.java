@@ -14,7 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import pl.fuzjajadrowa.froggy.sound.FroggySounds;
+import pl.fuzjajadrowa.froggy.registry.FroggyItems;
+import pl.fuzjajadrowa.froggy.registry.FroggySounds;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -117,7 +118,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
 
         if (!(this instanceof FroggyStalkerEntity) && this.entityData.get(EFFECT_STATE) == 0) {
             // Check cough syrup interaction
-            if (itemStack.is(pl.fuzjajadrowa.froggy.item.FroggyItems.COUGH_SYRUP.get())) {
+            if (itemStack.is(FroggyItems.COUGH_SYRUP.get())) {
                 this.setScreaming(false);
                 if (this.level().isClientSide()) {
                     this.openCoughSyrupScreen();
