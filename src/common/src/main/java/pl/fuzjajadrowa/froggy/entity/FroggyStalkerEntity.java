@@ -38,6 +38,10 @@ public class FroggyStalkerEntity extends BaseFroggyEntity {
             return;
         }
 
+        if (this.entityData.get(EFFECT_STATE) > 0) {
+            return;
+        }
+
         switch (this.state) {
             case STATE_STALKING:
                 this.navigation.stop();

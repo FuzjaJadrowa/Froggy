@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,7 +27,7 @@ import net.minecraftforge.registries.RegistryObject;
 import pl.fuzjajadrowa.froggy.Froggy;
 import pl.fuzjajadrowa.froggy.client.FroggyRenderer;
 import pl.fuzjajadrowa.froggy.client.FroggySleepingRenderer;
-import pl.fuzjajadrowa.froggy.entity.FroggyEntities;
+import pl.fuzjajadrowa.froggy.registry.FroggyEntities;
 import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
@@ -49,14 +50,29 @@ public final class FroggyForge {
     public static final RegistryObject<SoundEvent> WALK = SOUNDS.register("walk", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "walk")));
     public static final RegistryObject<SoundEvent> FART = SOUNDS.register("fart", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "fart")));
     public static final RegistryObject<SoundEvent> YIPPE = SOUNDS.register("yippe", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "yippe")));
+    public static final RegistryObject<SoundEvent> MLEM = SOUNDS.register("mlem", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "mlem")));
+
+    public static final RegistryObject<Item> COUGH_SYRUP = ITEMS.register("cough_syrup",
+            () -> new Item(new Item.Properties().stacksTo(16)));
+
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
+
+    public static final RegistryObject<CreativeModeTab> FROGGY_TAB = CREATIVE_MODE_TABS.register("froggy", () ->
+            CreativeModeTab.builder()
+                    .title(net.minecraft.network.chat.Component.translatable("itemGroup.froggy"))
+                    .icon(() -> new net.minecraft.world.item.ItemStack(COUGH_SYRUP.get()))
+                    .displayItems((parameters, output) -> {
+                        output.accept(COUGH_SYRUP.get());
+                    })
+                    .build());
 
     public static final RegistryObject<EntityType<FroggyStalkerEntity>> FROGGY_STALKER = ENTITY_TYPES.register("froggy_stalker",
             () -> EntityType.Builder.of(FroggyStalkerEntity::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.8f)
                     .build("froggy_stalker"));
 
-    public static final RegistryObject<EntityType<FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
-            () -> EntityType.Builder.of(FroggyJumpscareEntity::new, MobCategory.MONSTER)
+    public static final RegistryObject<EntityType<FroggyEntities.FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
+            () -> EntityType.Builder.of(FroggyEntities.FroggyJumpscareEntity::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.8f)
                     .build("froggy_jumpscare"));
 
@@ -70,9 +86,6 @@ public final class FroggyForge {
                     .sized(0.6f, 1.8f)
                     .build("froggy_bored"));
 
-    public static final RegistryObject<Item> COUGH_SYRUP = ITEMS.register("cough_syrup",
-            () -> new Item(new Item.Properties().stacksTo(1)));
-
     public FroggyForge() {
         Froggy.init();
 
@@ -81,6 +94,7 @@ public final class FroggyForge {
         SOUNDS.register(modEventBus);
         ENTITY_TYPES.register(modEventBus);
         ITEMS.register(modEventBus);
+        CREATIVE_MODE_TABS.register(modEventBus);
 
         FroggySounds.SCREAM1 = SCREAM1;
         FroggySounds.SCREAM2 = SCREAM2;
@@ -89,6 +103,7 @@ public final class FroggyForge {
         FroggySounds.WALK = WALK;
         FroggySounds.FART = FART;
         FroggySounds.YIPPE = YIPPE;
+        FroggySounds.MLEM = MLEM;
 
         FroggyEntities.STALKER = FROGGY_STALKER;
         FroggyEntities.JUMPSCARE = FROGGY_JUMPSCARE;
@@ -100,6 +115,12 @@ public final class FroggyForge {
         // Register custom packets
         FroggyPackets.register();
 
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            pl.fuzjajadrowa.froggy.network.FroggyPacketSender.sender = (entityId, isCorrect) -> {
+                FroggyPackets.INSTANCE.sendToServer(new pl.fuzjajadrowa.froggy.network.FroggyCoughSyrupPacket(entityId, isCorrect));
+            };
+        }
+
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(GameEvents.class);
     }
@@ -108,15 +129,12 @@ public final class FroggyForge {
     public static class ModEvents {
         @SubscribeEvent
         public static void buildContents(BuildCreativeModeTabContentsEvent event) {
-            if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
-                event.accept(COUGH_SYRUP.get());
-            }
         }
 
         @SubscribeEvent
         public static void registerAttributes(EntityAttributeCreationEvent event) {
             event.put(FROGGY_STALKER.get(), FroggyStalkerEntity.createAttributes().build());
-            event.put(FROGGY_JUMPSCARE.get(), FroggyJumpscareEntity.createAttributes().build());
+            event.put(FROGGY_JUMPSCARE.get(), FroggyEntities.FroggyJumpscareEntity.createAttributes().build());
             event.put(FROGGY_SLEEPING.get(), FroggySleepingEntity.createAttributes().build());
             event.put(FROGGY_BORED.get(), FroggyBoredEntity.createAttributes().build());
         }

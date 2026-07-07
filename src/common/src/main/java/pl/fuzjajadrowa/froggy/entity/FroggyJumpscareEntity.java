@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import pl.fuzjajadrowa.froggy.sound.FroggySounds;
+import pl.fuzjajadrowa.froggy.registry.FroggySounds;
 
 public class FroggyJumpscareEntity extends BaseFroggyEntity {
     private static final int STATE_APPROACHING = 0;
@@ -54,7 +54,7 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
 
         switch (this.state) {
             case STATE_APPROACHING:
-                this.navigation.moveTo(player, 1.2);
+                this.navigation.moveTo(player, 1);
                 this.approachTimer++;
                 
                 double distSq = this.distanceToSqr(player);
@@ -90,7 +90,7 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
                         direction = new Vec3(this.random.nextDouble() - 0.5, 0, this.random.nextDouble() - 0.5);
                     }
                     this.fleeTarget = this.position().add(direction.normalize().scale(16));
-                    this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, 1.8);
+                    this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, 1.4);
                 }
                 break;
         }
@@ -127,6 +127,6 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
             direction = new Vec3(this.random.nextDouble() - 0.5, 0, this.random.nextDouble() - 0.5);
         }
         this.fleeTarget = this.position().add(direction.normalize().scale(16));
-        this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, 1.8);
+        this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, 1.4);
     }
 }

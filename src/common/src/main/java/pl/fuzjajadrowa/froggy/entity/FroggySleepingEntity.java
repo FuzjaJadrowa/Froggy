@@ -39,6 +39,10 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
             return;
         }
 
+        if (this.entityData.get(EFFECT_STATE) > 0) {
+            return;
+        }
+
         if (this.isScreaming()) {
             this.disappearTimer--;
             if (this.disappearTimer <= 0) {
@@ -57,6 +61,10 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
 
     @Override
     public void travel(Vec3 travelVector) {
+        if (this.entityData.get(EFFECT_STATE) > 0) {
+            super.travel(travelVector);
+            return;
+        }
         if (!this.isScreaming()) {
             this.setDeltaMovement(Vec3.ZERO);
         } else {
@@ -66,22 +74,17 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
 
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        ItemStack itemStack = player.getItemInHand(hand);
-        if (this.entityData.get(EFFECT_STATE) == 0) {
-            if (itemStack.is(FroggyItems.COUGH_SYRUP.get()) ||
-//? if >=1.21.1 {
-                itemStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
-//?} else {
-/*                itemStack.getItem().isEdible()) {
-*/
-//?}
-                return super.mobInteract(player, hand);
+        if (this.entityData.get(EFFECT_STATE) > 0) {
+            return InteractionResult.PASS;
+        }
+
+        if (!this.isScreaming()) {
+            if (!this.level().isClientSide()) {
+                wakeUp(player);
             }
+            return InteractionResult.sidedSuccess(this.level().isClientSide());
         }
-        if (!this.isScreaming() && !this.level().isClientSide()) {
-            wakeUp(player);
-            return InteractionResult.SUCCESS;
-        }
+
         return super.mobInteract(player, hand);
     }
 

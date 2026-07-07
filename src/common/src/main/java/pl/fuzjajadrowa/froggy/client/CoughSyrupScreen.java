@@ -12,6 +12,7 @@ public class CoughSyrupScreen extends Screen {
     private static final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "textures/gui/cough_question.png");
     private final int entityId;
     private boolean isRendering = false;
+    private boolean choiceSubmitted = false;
 
     public CoughSyrupScreen(int entityId) {
         super(Component.translatable("gui.froggy.cough_syrup.title"));
@@ -34,9 +35,18 @@ public class CoughSyrupScreen extends Screen {
     }
 
     private void submitChoice() {
+        this.choiceSubmitted = true;
         boolean isCorrect = this.minecraft.level.random.nextBoolean();
         FroggyPacketSender.sendCoughSyrupChoice(entityId, isCorrect);
         this.onClose();
+    }
+
+    @Override
+    public void onClose() {
+        if (!this.choiceSubmitted) {
+            FroggyPacketSender.sendCoughSyrupChoice(entityId, false);
+        }
+        super.onClose();
     }
 
     @Override

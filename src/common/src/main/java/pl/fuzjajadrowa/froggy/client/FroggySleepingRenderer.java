@@ -9,6 +9,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class FroggySleepingRenderer extends GeoEntityRenderer<FroggySleepingEntity> {
     public FroggySleepingRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new FroggyModel<>());
+        this.addRenderLayer(new FroggyCoughSyrupItemLayer<>(this));
     }
 
 //? if >=1.21.1 {
@@ -22,7 +23,7 @@ public class FroggySleepingRenderer extends GeoEntityRenderer<FroggySleepingEnti
 */
 //?}
 
-        if (!entity.isScreaming()) {
+        if (!entity.isScreaming() && entity.getEffectState() == 0) {
             poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
             poseStack.translate(0.0, -0.6, -0.2);
         }

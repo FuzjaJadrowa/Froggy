@@ -42,7 +42,7 @@ public class FroggyBoredEntity extends BaseFroggyEntity {
             return;
         }
 
-        this.navigation.moveTo(player, 0.5);
+        this.navigation.moveTo(player, 1);
         this.approachTimer++;
 
         double distSq = this.distanceToSqr(player);

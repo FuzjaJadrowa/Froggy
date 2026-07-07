@@ -27,6 +27,10 @@ import pl.fuzjajadrowa.froggy.registry.FroggySounds;
 import pl.fuzjajadrowa.froggy.registry.FroggyItems;
 import pl.fuzjajadrowa.froggy.spawner.FroggySpawner;
 
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+
 @Mod(Froggy.MOD_ID)
 public final class FroggyNeoForge {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Froggy.MOD_ID);
@@ -40,6 +44,21 @@ public final class FroggyNeoForge {
     public static final DeferredHolder<SoundEvent, SoundEvent> WALK = SOUNDS.register("walk", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "walk")));
     public static final DeferredHolder<SoundEvent, SoundEvent> FART = SOUNDS.register("fart", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "fart")));
     public static final DeferredHolder<SoundEvent, SoundEvent> YIPPE = SOUNDS.register("yippe", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "yippe")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> MLEM = SOUNDS.register("mlem", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "mlem")));
+
+    public static final DeferredHolder<Item, Item> COUGH_SYRUP = ITEMS.register("cough_syrup",
+            () -> new Item(new Item.Properties().stacksTo(16)));
+
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FROGGY_TAB = CREATIVE_MODE_TABS.register("froggy", () ->
+            CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.froggy"))
+                    .icon(() -> new ItemStack(COUGH_SYRUP.get()))
+                    .displayItems((parameters, output) -> {
+                        output.accept(COUGH_SYRUP.get());
+                    })
+                    .build());
 
     public static final DeferredHolder<EntityType<?>, EntityType<FroggyStalkerEntity>> FROGGY_STALKER = ENTITY_TYPES.register("froggy_stalker",
             () -> EntityType.Builder.of(FroggyStalkerEntity::new, MobCategory.MONSTER)
@@ -61,15 +80,13 @@ public final class FroggyNeoForge {
                     .sized(0.6f, 1.8f)
                     .build("froggy_bored"));
 
-    public static final DeferredHolder<Item, Item> COUGH_SYRUP = ITEMS.register("cough_syrup",
-            () -> new Item(new Item.Properties().stacksTo(1)));
-
     public FroggyNeoForge(IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
         Froggy.init();
 
         SOUNDS.register(modEventBus);
         ENTITY_TYPES.register(modEventBus);
         ITEMS.register(modEventBus);
+        CREATIVE_MODE_TABS.register(modEventBus);
 
         FroggySounds.SCREAM1 = SCREAM1;
         FroggySounds.SCREAM2 = SCREAM2;
@@ -78,6 +95,7 @@ public final class FroggyNeoForge {
         FroggySounds.WALK = WALK;
         FroggySounds.FART = FART;
         FroggySounds.YIPPE = YIPPE;
+        FroggySounds.MLEM = MLEM;
 
         FroggyEntities.STALKER = FROGGY_STALKER;
         FroggyEntities.JUMPSCARE = FROGGY_JUMPSCARE;
@@ -107,9 +125,6 @@ public final class FroggyNeoForge {
     public static class ModEvents {
         @SubscribeEvent
         public static void buildContents(net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent event) {
-            if (event.getTabKey() == net.minecraft.world.item.CreativeModeTabs.FOOD_AND_DRINKS) {
-                event.accept(COUGH_SYRUP.get());
-            }
         }
 
         @SubscribeEvent

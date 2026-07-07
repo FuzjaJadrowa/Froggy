@@ -16,6 +16,8 @@
   "subtitles.froggy.walk": "Żabiec kroczy",
   "subtitles.froggy.fart": "Żabiec pierdzi",
   "subtitles.froggy.yippe": "Żabiec cieszy się",
+  "subtitles.froggy.mlem": "Żabiec mlaszcze",
+  "itemGroup.froggy": "Froggy",
   "gui.froggy.config.title": "Konfiguracja Modu Froggy",
   "gui.froggy.config.stalker": "Spawn Stalkera",
   "gui.froggy.config.jumpscare": "Spawn Jumpscare",
