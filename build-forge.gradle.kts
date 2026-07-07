@@ -28,6 +28,7 @@ versionedJavaSources(
 repositories {
     mavenCentral()
     maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
+    maven("https://maven.blamejared.com/")
 }
 
 loom {
@@ -54,6 +55,8 @@ dependencies {
     modImplementation("software.bernie.geckolib:geckolib-forge-1.20.1:${mod.dep("geckolib_version")}")
     implementation("com.eliotlash.mclib:mclib:20")
     "forgeRuntimeLibrary"("com.eliotlash.mclib:mclib:20")
+    compileOnly("mezz.jei:jei-1.20.1-forge-api:15.3.0.4")
+    modLocalRuntime("mezz.jei:jei-1.20.1-forge:15.3.0.4")
 }
 
 val requiredJava = JavaVersion.toVersion(javaVersion)

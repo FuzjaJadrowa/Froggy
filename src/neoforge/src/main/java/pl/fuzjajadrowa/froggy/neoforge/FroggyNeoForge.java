@@ -45,8 +45,13 @@ public final class FroggyNeoForge {
     public static final DeferredHolder<SoundEvent, SoundEvent> FART = SOUNDS.register("fart", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "fart")));
     public static final DeferredHolder<SoundEvent, SoundEvent> YIPPE = SOUNDS.register("yippe", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "yippe")));
     public static final DeferredHolder<SoundEvent, SoundEvent> MLEM = SOUNDS.register("mlem", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "mlem")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUZZ = SOUNDS.register("buzz", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "buzz")));
 
     public static final DeferredHolder<Item, Item> COUGH_SYRUP = ITEMS.register("cough_syrup",
+            () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final DeferredHolder<Item, Item> SWEET_BOTTLE = ITEMS.register("sweet_bottle",
+            () -> new pl.fuzjajadrowa.froggy.item.SweetBottleItem(new Item.Properties().stacksTo(16)));
+    public static final DeferredHolder<Item, Item> FLY_IN_A_BOTTLE = ITEMS.register("fly_in_a_bottle",
             () -> new Item(new Item.Properties().stacksTo(16)));
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
@@ -57,6 +62,8 @@ public final class FroggyNeoForge {
                     .icon(() -> new ItemStack(COUGH_SYRUP.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(COUGH_SYRUP.get());
+                        output.accept(SWEET_BOTTLE.get());
+                        output.accept(FLY_IN_A_BOTTLE.get());
                     })
                     .build());
 
@@ -96,6 +103,7 @@ public final class FroggyNeoForge {
         FroggySounds.FART = FART;
         FroggySounds.YIPPE = YIPPE;
         FroggySounds.MLEM = MLEM;
+        FroggySounds.BUZZ = BUZZ;
 
         FroggyEntities.STALKER = FROGGY_STALKER;
         FroggyEntities.JUMPSCARE = FROGGY_JUMPSCARE;
@@ -103,6 +111,8 @@ public final class FroggyNeoForge {
         FroggyEntities.BORED = FROGGY_BORED;
 
         FroggyItems.COUGH_SYRUP = COUGH_SYRUP;
+        FroggyItems.SWEET_BOTTLE = SWEET_BOTTLE;
+        FroggyItems.FLY_IN_A_BOTTLE = FLY_IN_A_BOTTLE;
 
         if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             pl.fuzjajadrowa.froggy.network.FroggyPacketSender.sender = (entityId, isCorrect) -> {

@@ -32,12 +32,15 @@ repositories {
     maven("https://maven.neoforged.net/releases/")
     maven("https://maven.terraformersmc.com/")
     maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
+    maven("https://maven.blamejared.com/")
 }
 
 val projectName = project.name
 
 dependencies {
     implementation("software.bernie.geckolib:geckolib-neoforge-1.21.1:${mod.dep("geckolib_version")}")
+    compileOnly("mezz.jei:jei-1.21.1-neoforge-api:19.18.3.204")
+    runtimeOnly("mezz.jei:jei-1.21.1-neoforge:19.18.3.204")
 }
 
 neoForge {

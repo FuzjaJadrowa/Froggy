@@ -12,4 +12,5 @@ public class FroggySounds {
     public static Supplier<SoundEvent> FART;
     public static Supplier<SoundEvent> YIPPE;
     public static Supplier<SoundEvent> MLEM;
+    public static Supplier<SoundEvent> BUZZ;
 }

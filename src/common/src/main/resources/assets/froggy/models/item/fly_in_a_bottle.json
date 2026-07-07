@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "froggy:item/fly_in_a_bottle"
+  }
+}

@@ -30,5 +30,9 @@
   "gui.froggy.config.min_rate": "Min Cooldown",
   "gui.froggy.config.max_random": "Max Random",
   "gui.froggy.config.sleep_check": "Sleep Check",
-  "gui.froggy.config.server_managed": "Managed by Server (Read Only)"
+  "gui.froggy.config.server_managed": "Managed by Server (Read Only)",
+  "item.froggy.sweet_bottle": "Sweet Bottle",
+  "item.froggy.fly_in_a_bottle": "Fly in a Bottle",
+  "subtitles.froggy.buzz": "Fly buzzing",
+  "jei.froggy.fly_in_a_bottle.info": "To catch a fly in a bottle, right-click outdoors with a Sweet Bottle while under the open sky."
 }

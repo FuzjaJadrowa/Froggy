@@ -46,5 +46,14 @@
     "sounds": [
       "froggy:mlem"
     ]
+  },
+  "buzz": {
+    "subtitle": "subtitles.froggy.buzz",
+    "sounds": [
+      {
+        "name": "minecraft:entity.bee.loop",
+        "type": "event"
+      }
+    ]
   }
 }

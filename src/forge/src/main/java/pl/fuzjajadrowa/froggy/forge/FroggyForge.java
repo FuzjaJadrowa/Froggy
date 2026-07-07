@@ -51,8 +51,13 @@ public final class FroggyForge {
     public static final RegistryObject<SoundEvent> FART = SOUNDS.register("fart", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "fart")));
     public static final RegistryObject<SoundEvent> YIPPE = SOUNDS.register("yippe", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "yippe")));
     public static final RegistryObject<SoundEvent> MLEM = SOUNDS.register("mlem", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "mlem")));
+    public static final RegistryObject<SoundEvent> BUZZ = SOUNDS.register("buzz", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Froggy.MOD_ID, "buzz")));
 
     public static final RegistryObject<Item> COUGH_SYRUP = ITEMS.register("cough_syrup",
+            () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> SWEET_BOTTLE = ITEMS.register("sweet_bottle",
+            () -> new pl.fuzjajadrowa.froggy.item.SweetBottleItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> FLY_IN_A_BOTTLE = ITEMS.register("fly_in_a_bottle",
             () -> new Item(new Item.Properties().stacksTo(16)));
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
@@ -63,6 +68,8 @@ public final class FroggyForge {
                     .icon(() -> new net.minecraft.world.item.ItemStack(COUGH_SYRUP.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(COUGH_SYRUP.get());
+                        output.accept(SWEET_BOTTLE.get());
+                        output.accept(FLY_IN_A_BOTTLE.get());
                     })
                     .build());
 
@@ -104,6 +111,7 @@ public final class FroggyForge {
         FroggySounds.FART = FART;
         FroggySounds.YIPPE = YIPPE;
         FroggySounds.MLEM = MLEM;
+        FroggySounds.BUZZ = BUZZ;
 
         FroggyEntities.STALKER = FROGGY_STALKER;
         FroggyEntities.JUMPSCARE = FROGGY_JUMPSCARE;
@@ -111,6 +119,8 @@ public final class FroggyForge {
         FroggyEntities.BORED = FROGGY_BORED;
 
         FroggyItems.COUGH_SYRUP = COUGH_SYRUP;
+        FroggyItems.SWEET_BOTTLE = SWEET_BOTTLE;
+        FroggyItems.FLY_IN_A_BOTTLE = FLY_IN_A_BOTTLE;
 
         // Register custom packets
         FroggyPackets.register();
