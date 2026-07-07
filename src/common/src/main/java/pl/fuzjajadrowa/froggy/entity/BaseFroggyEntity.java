@@ -31,6 +31,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
     public static final EntityDataAccessor<Boolean> SCREAMING = SynchedEntityData.defineId(BaseFroggyEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> EFFECT_STATE = SynchedEntityData.defineId(BaseFroggyEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EFFECT_TIMER = SynchedEntityData.defineId(BaseFroggyEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<ItemStack> EATEN_ITEM = SynchedEntityData.defineId(BaseFroggyEntity.class, EntityDataSerializers.ITEM_STACK);
 
     public static final int STATE_NONE = 0;
     public static final int STATE_FED = 1;
@@ -38,6 +39,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
     public static final int STATE_INCORRECT_CHOICE = 3;
     public static final int STATE_EATING = 4;
     public static final int STATE_WAITING_FOR_CHOICE = 5;
+    public static final int STATE_EATING_FOOD = 6;
 
     public static int lastInteractedEntityId = -1;
 
@@ -56,6 +58,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         builder.define(SCREAMING, false);
         builder.define(EFFECT_STATE, 0);
         builder.define(EFFECT_TIMER, 0);
+        builder.define(EATEN_ITEM, ItemStack.EMPTY);
     }
 //?} else {
 /*    @Override
@@ -64,6 +67,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         this.entityData.define(SCREAMING, false);
         this.entityData.define(EFFECT_STATE, 0);
         this.entityData.define(EFFECT_TIMER, 0);
+        this.entityData.define(EATEN_ITEM, ItemStack.EMPTY);
     }
 */
 //?}
@@ -78,6 +82,10 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
 
     public int getEffectState() {
         return this.entityData.get(EFFECT_STATE);
+    }
+
+    public ItemStack getEatenItem() {
+        return this.entityData.get(EATEN_ITEM);
     }
 
     public void stopSoundsAndTTS() {
@@ -118,12 +126,24 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
                 int timer = this.entityData.get(EFFECT_TIMER);
                 timer--;
                 this.entityData.set(EFFECT_TIMER, timer);
-                if (state == STATE_EATING && timer == 44) { // 60 - 16 = 44 (0.8s)
+                if ((state == STATE_EATING || state == STATE_EATING_FOOD) && timer == 44) { // 60 - 16 = 44 (0.8s)
                     this.level().playSound(null, this.getX(), this.getY(), this.getZ(), FroggySounds.MLEM.get(), this.getSoundSource(), 1.0F, 1.0F);
                 }
                 if (timer <= 0) {
                     if (state == STATE_EATING) {
                         this.entityData.set(EFFECT_STATE, STATE_WAITING_FOR_CHOICE);
+                    } else if (state == STATE_EATING_FOOD) {
+                        this.entityData.set(EFFECT_STATE, STATE_FED);
+                        this.entityData.set(EFFECT_TIMER, 40); // 2 seconds
+
+                        // Play fart sound
+                        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), FroggySounds.FART.get(), this.getSoundSource(), 1.0F, 1.0F);
+
+                        // Spawn fart particles on server
+                        if (this.level() instanceof ServerLevel serverLevel) {
+                            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE, this.getX(), this.getY() + 0.2, this.getZ(), 5, 0.2, 0.1, 0.2, 0.02);
+                            serverLevel.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.4f, 0.25f, 0.1f), 1.5f), this.getX(), this.getY() + 0.2, this.getZ(), 15, 0.2, 0.2, 0.2, 0.05);
+                        }
                     } else {
                         if (state == STATE_CORRECT_CHOICE) {
                             net.minecraft.core.BlockPos pos = this.blockPosition();
@@ -139,14 +159,13 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
                 }
             }
 
-            if (state == STATE_FED || state == STATE_CORRECT_CHOICE || state == STATE_EATING || state == STATE_WAITING_FOR_CHOICE) {
+            if (state == STATE_FED || state == STATE_CORRECT_CHOICE || state == STATE_EATING || state == STATE_EATING_FOOD || state == STATE_WAITING_FOR_CHOICE) {
                 this.navigation.stop();
                 this.setDeltaMovement(Vec3.ZERO);
-                if (state == STATE_EATING) {
+                if (state == STATE_EATING || state == STATE_EATING_FOOD) {
                     this.setScreaming(false);
                 }
             } else if (state == STATE_INCORRECT_CHOICE) {
-                // Fleeing: run away from nearest player
                 Player player = this.level().getNearestPlayer(this, 30.0);
                 if (player != null) {
                     if (this.tickCount % 10 == 0 || this.navigation.isDone()) {
@@ -166,7 +185,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
     @Override
     public void travel(Vec3 travelVector) {
         int state = this.entityData.get(EFFECT_STATE);
-        if (state == STATE_FED || state == STATE_CORRECT_CHOICE || state == STATE_EATING || state == STATE_WAITING_FOR_CHOICE) {
+        if (state == STATE_FED || state == STATE_CORRECT_CHOICE || state == STATE_EATING || state == STATE_EATING_FOOD || state == STATE_WAITING_FOR_CHOICE) {
             this.setDeltaMovement(Vec3.ZERO);
         } else {
             super.travel(travelVector);
@@ -181,20 +200,22 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
             return InteractionResult.PASS;
         }
 
-        if (this.entityData.get(EFFECT_STATE) == 0) {
-            // Check cough syrup interaction
+        if (this.entityData.get(EFFECT_STATE) == 0) {            // Check cough syrup interaction
             if (itemStack.is(FroggyItems.COUGH_SYRUP.get())) {
                 this.setScreaming(false);
                 this.stopSoundsAndTTS();
+                ItemStack syrupStack = new ItemStack(FroggyItems.COUGH_SYRUP.get());
                 if (this.level().isClientSide()) {
                     lastInteractedEntityId = this.getId();
                     this.entityData.set(EFFECT_STATE, STATE_EATING); // Client prediction to prevent Śpioch lay down frame glitch
+                    this.entityData.set(EATEN_ITEM, syrupStack);
                 } else {
                     if (!player.getAbilities().instabuild) {
                         itemStack.shrink(1);
                     }
                     this.entityData.set(EFFECT_STATE, STATE_EATING);
                     this.entityData.set(EFFECT_TIMER, 60); // 3.0 seconds (chewing animation length)
+                    this.entityData.set(EATEN_ITEM, syrupStack);
                     this.navigation.stop();
                     this.setDeltaMovement(Vec3.ZERO);
                 }
@@ -210,8 +231,14 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
 */
 //?}
                     this.setScreaming(false);
-                    if (!this.level().isClientSide()) {
-                        this.feed(player, hand);
+                    this.stopSoundsAndTTS();
+                    ItemStack eaten = itemStack.copy();
+                    eaten.setCount(1);
+                    if (this.level().isClientSide()) {
+                        this.entityData.set(EFFECT_STATE, STATE_EATING_FOOD);
+                        this.entityData.set(EATEN_ITEM, eaten);
+                    } else {
+                        this.feed(player, hand, eaten);
                     }
                     return InteractionResult.sidedSuccess(this.level().isClientSide());
                 }
@@ -221,25 +248,17 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         return super.mobInteract(player, hand);
     }
 
-    public void feed(Player player, InteractionHand hand) {
+    public void feed(Player player, InteractionHand hand, ItemStack eatenStack) {
         ItemStack stack = player.getItemInHand(hand);
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);
         }
-        this.entityData.set(EFFECT_STATE, 1);
-        this.entityData.set(EFFECT_TIMER, 80); // 4 seconds
+        this.entityData.set(EFFECT_STATE, STATE_EATING_FOOD);
+        this.entityData.set(EFFECT_TIMER, 60); // 3.0 seconds (chewing animation length)
+        this.entityData.set(EATEN_ITEM, eatenStack);
         this.setScreaming(false);
         this.navigation.stop();
         this.setDeltaMovement(Vec3.ZERO);
-
-        // Play fart sound
-        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), FroggySounds.FART.get(), this.getSoundSource(), 1.0F, 1.0F);
-
-        // Spawn fart particles on server
-        if (this.level() instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE, this.getX(), this.getY() + 0.2, this.getZ(), 5, 0.2, 0.1, 0.2, 0.02);
-            serverLevel.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.4f, 0.25f, 0.1f), 1.5f), this.getX(), this.getY() + 0.2, this.getZ(), 15, 0.2, 0.2, 0.2, 0.05);
-        }
     }
 
     private void openCoughSyrupScreen() {
@@ -267,18 +286,17 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
         this.setScreaming(false);
         if (isCorrect) {
             this.entityData.set(EFFECT_STATE, STATE_CORRECT_CHOICE);
-            this.entityData.set(EFFECT_TIMER, 100); // 5 seconds
+            this.entityData.set(EFFECT_TIMER, 100);
             this.navigation.stop();
             this.setDeltaMovement(Vec3.ZERO);
 
-            // Play yippe.ogg sound
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), FroggySounds.YIPPE.get(), this.getSoundSource(), 1.0F, 1.0F);
         } else {
             this.entityData.set(EFFECT_STATE, STATE_INCORRECT_CHOICE);
-            this.entityData.set(EFFECT_TIMER, 100); // 5 seconds
+            this.entityData.set(EFFECT_TIMER, 100);
             net.minecraft.world.entity.ai.attributes.AttributeInstance speedAttr = this.getAttribute(Attributes.MOVEMENT_SPEED);
             if (speedAttr != null) {
-                speedAttr.setBaseValue(0.25); // Ensure they can run (especially Sleeping Froggy who has base speed 0)
+                speedAttr.setBaseValue(0.25);
             }
         }
     }
@@ -316,7 +334,7 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "controller", 2, event -> {
             int state = this.entityData.get(EFFECT_STATE);
-            if (state == STATE_EATING) {
+            if (state == STATE_EATING || state == STATE_EATING_FOOD) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("eat"));
             }
             if (this.isScreaming()) {

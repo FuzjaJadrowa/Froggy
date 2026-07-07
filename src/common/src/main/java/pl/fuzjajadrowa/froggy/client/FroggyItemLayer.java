@@ -6,21 +6,21 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import pl.fuzjajadrowa.froggy.entity.BaseFroggyEntity;
-import pl.fuzjajadrowa.froggy.registry.FroggyItems;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
 
-public class FroggyCoughSyrupItemLayer<T extends BaseFroggyEntity> extends BlockAndItemGeoLayer<T> {
-    public FroggyCoughSyrupItemLayer(GeoRenderer<T> renderer) {
+public class FroggyItemLayer<T extends BaseFroggyEntity> extends BlockAndItemGeoLayer<T> {
+    public FroggyItemLayer(GeoRenderer<T> renderer) {
         super(renderer);
     }
 
     @Override
     protected ItemStack getStackForBone(GeoBone bone, T animatable) {
         if (bone.getName().equals("rai")) {
-            if (animatable.getEffectState() == BaseFroggyEntity.STATE_EATING) {
-                return new ItemStack(FroggyItems.COUGH_SYRUP.get());
+            int state = animatable.getEffectState();
+            if (state == BaseFroggyEntity.STATE_EATING || state == BaseFroggyEntity.STATE_EATING_FOOD) {
+                return animatable.getEatenItem();
             }
         }
         return ItemStack.EMPTY;
@@ -40,9 +40,8 @@ public class FroggyCoughSyrupItemLayer<T extends BaseFroggyEntity> extends Block
     protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, T animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
         if (bone.getName().equals("rai")) {
             poseStack.pushPose();
-            // Center and scale the syrup item on the rai bone
             poseStack.translate(0.0f, 0.05f, 0.0f);
-            poseStack.scale(0.45f, 0.45f, 0.45f);
+            poseStack.scale(0.33f, 0.33f, 0.33f);
             super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight, packedOverlay);
             poseStack.popPose();
         } else {

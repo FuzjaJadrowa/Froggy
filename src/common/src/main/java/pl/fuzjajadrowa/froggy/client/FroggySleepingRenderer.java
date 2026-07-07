@@ -9,7 +9,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class FroggySleepingRenderer extends GeoEntityRenderer<FroggySleepingEntity> {
     public FroggySleepingRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new FroggyModel<>());
-        this.addRenderLayer(new FroggyCoughSyrupItemLayer<>(this));
+        this.addRenderLayer(new FroggyItemLayer<>(this));
     }
 
 //? if >=1.21.1 {
