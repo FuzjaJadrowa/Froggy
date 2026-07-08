@@ -14,6 +14,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -27,7 +28,7 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntity {
+public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
     public static final EntityDataAccessor<Boolean> SCREAMING = SynchedEntityData.defineId(BaseFroggyEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> EFFECT_STATE = SynchedEntityData.defineId(BaseFroggyEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EFFECT_TIMER = SynchedEntityData.defineId(BaseFroggyEntity.class, EntityDataSerializers.INT);
@@ -184,14 +185,14 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
     public void travel(Vec3 travelVector) {
         int state = this.entityData.get(EFFECT_STATE);
         if (state == STATE_FED || state == STATE_CORRECT_CHOICE || state == STATE_EATING || state == STATE_EATING_FOOD || state == STATE_WAITING_FOR_CHOICE) {
-            this.setDeltaMovement(Vec3.ZERO);
+            super.travel(Vec3.ZERO);
         } else {
             super.travel(travelVector);
         }
     }
 
     @Override
-    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (itemStack.is(FroggyItems.FLY_IN_A_BOTTLE.get())) {
@@ -210,6 +211,9 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
                         
                         if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HEART, this.getX(), this.getY() + 0.5, this.getZ(), 8, 0.2, 0.2, 0.2, 0.02);
+                            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                                net.minecraft.advancements.CriteriaTriggers.TAME_ANIMAL.trigger(serverPlayer, tamed);
+                            }
                         }
                         this.level().playSound(null, this.getX(), this.getY(), this.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, this.getSoundSource(), 1.0F, 1.0F);
                         
@@ -219,7 +223,6 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
                         if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 8, 0.2, 0.2, 0.2, 0.02);
                         }
-                        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), net.minecraft.sounds.SoundEvents.WOLF_WHINE, this.getSoundSource(), 0.5F, 0.8F);
                     }
                 }
                 return InteractionResult.sidedSuccess(this.level().isClientSide());
@@ -365,6 +368,16 @@ public abstract class BaseFroggyEntity extends PathfinderMob implements GeoEntit
 
     @Override
     public boolean canBeCollidedWith() {
+        return false;
+    }
+
+    @Override
+    public net.minecraft.world.entity.AgeableMob getBreedOffspring(ServerLevel level, net.minecraft.world.entity.AgeableMob parent) {
+        return null;
+    }
+
+    @Override
+    public boolean isFood(ItemStack stack) {
         return false;
     }
 

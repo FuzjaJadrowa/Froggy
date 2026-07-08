@@ -73,7 +73,7 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
     }
 
     @Override
-    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (this.entityData.get(EFFECT_STATE) > 0) {
             return InteractionResult.PASS;
         }

@@ -87,27 +87,27 @@ public final class FroggyNeoForge {
 
     public static final DeferredHolder<EntityType<?>, EntityType<FroggyStalkerEntity>> FROGGY_STALKER = ENTITY_TYPES.register("froggy_stalker",
             () -> EntityType.Builder.of(FroggyStalkerEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_stalker"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FroggyEntities.FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
             () -> EntityType.Builder.of(FroggyEntities.FroggyJumpscareEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_jumpscare"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FroggySleepingEntity>> FROGGY_SLEEPING = ENTITY_TYPES.register("froggy_sleeping",
             () -> EntityType.Builder.of(FroggySleepingEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_sleeping"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FroggyBoredEntity>> FROGGY_BORED = ENTITY_TYPES.register("froggy_bored",
             () -> EntityType.Builder.of(FroggyBoredEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_bored"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity>> FROGGY_TAMED = ENTITY_TYPES.register("froggy_tamed",
             () -> EntityType.Builder.of(pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity::new, MobCategory.CREATURE)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_tamed"));
 
     public static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(net.minecraft.core.registries.BuiltInRegistries.MENU, Froggy.MOD_ID);

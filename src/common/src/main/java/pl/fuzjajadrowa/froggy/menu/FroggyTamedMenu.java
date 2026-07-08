@@ -24,7 +24,7 @@ public class FroggyTamedMenu extends AbstractContainerMenu {
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 9; c++) {
                 final int index = c + r * 9;
-                this.addSlot(new Slot(froggyInventory, index, 120 + c * 18, 18 + r * 18) {
+                this.addSlot(new Slot(froggyInventory, index, 121 + c * 18, 19 + r * 18) {
                     @Override
                     public boolean mayPlace(ItemStack stack) {
                         return index < FroggyTamedMenu.this.froggy.getInventorySize();
@@ -40,12 +40,12 @@ public class FroggyTamedMenu extends AbstractContainerMenu {
 
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 9; c++) {
-                this.addSlot(new Slot(playerInventory, c + r * 9 + 9, 65 + c * 18, 86 + r * 18));
+                this.addSlot(new Slot(playerInventory, c + r * 9 + 9, 66 + c * 18, 87 + r * 18));
               }
         }
 
         for (int c = 0; c < 9; c++) {
-            this.addSlot(new Slot(playerInventory, c, 65 + c * 18, 145));
+            this.addSlot(new Slot(playerInventory, c, 66 + c * 18, 145));
         }
     }
 

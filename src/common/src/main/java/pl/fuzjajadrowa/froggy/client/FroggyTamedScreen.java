@@ -92,8 +92,8 @@ public class FroggyTamedScreen extends AbstractContainerScreen<FroggyTamedMenu> 
             for (int i = invSize; i < 27; i++) {
                 int col = i % 9;
                 int row = i / 9;
-                int slotX = x + 120 + col * 18;
-                int slotY = y + 18 + row * 18;
+                int slotX = x + 121 + col * 18;
+                int slotY = y + 19 + row * 18;
                 guiGraphics.fill(slotX, slotY, slotX + 16, slotY + 16, 0x80FF0000);
             }
         }
@@ -106,13 +106,13 @@ public class FroggyTamedScreen extends AbstractContainerScreen<FroggyTamedMenu> 
         if (this.menu.getFroggy() != null) {
             int invSize = this.menu.getFroggy().getInventorySize();
             int invLvl = invSize == 3 ? 0 : (invSize == 9 ? 1 : (invSize == 18 ? 2 : 3));
-            guiGraphics.drawString(this.font, Component.literal("Inv Lvl: " + invLvl + "/3"), 10, 24, 4210752, false);
+            guiGraphics.drawString(this.font, Component.literal("Inventory Level: " + invLvl + "/3"), 10, 24, 4210752, false);
 
             int screamDmg = this.menu.getFroggy().getScreamDamage();
             int screamLvl = screamDmg == 5 ? 0 : (screamDmg == 8 ? 1 : (screamDmg == 13 ? 2 : 3));
-            guiGraphics.drawString(this.font, Component.literal("Scream Lvl: " + screamLvl + "/3"), 10, 40, 4210752, false);
+            guiGraphics.drawString(this.font, Component.literal("Scream Level: " + screamLvl + "/3"), 10, 40, 4210752, false);
         }
 
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, 65, 74, 4210752, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, 66, 75, 4210752, false);
     }
 }

@@ -93,27 +93,27 @@ public final class FroggyForge {
 
     public static final RegistryObject<EntityType<FroggyStalkerEntity>> FROGGY_STALKER = ENTITY_TYPES.register("froggy_stalker",
             () -> EntityType.Builder.of(FroggyStalkerEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_stalker"));
 
     public static final RegistryObject<EntityType<FroggyEntities.FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
             () -> EntityType.Builder.of(FroggyEntities.FroggyJumpscareEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_jumpscare"));
 
     public static final RegistryObject<EntityType<FroggySleepingEntity>> FROGGY_SLEEPING = ENTITY_TYPES.register("froggy_sleeping",
             () -> EntityType.Builder.of(FroggySleepingEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_sleeping"));
 
     public static final RegistryObject<EntityType<FroggyBoredEntity>> FROGGY_BORED = ENTITY_TYPES.register("froggy_bored",
             () -> EntityType.Builder.of(FroggyBoredEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_bored"));
 
     public static final RegistryObject<EntityType<pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity>> FROGGY_TAMED = ENTITY_TYPES.register("froggy_tamed",
             () -> EntityType.Builder.of(pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity::new, MobCategory.CREATURE)
-                    .sized(0.6f, 1.8f)
+                    .sized(0.6f, 1.1f)
                     .build("froggy_tamed"));
 
     public static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Froggy.MOD_ID);
@@ -166,7 +166,6 @@ public final class FroggyForge {
             ), buf -> buf.writeInt(froggy.getId()));
         };
 
-        // Register custom packets
         FroggyPackets.register();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {

@@ -138,9 +138,14 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         if (screamTimer > 0) {
             screamTimer--;
             this.navigation.stop();
-            this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
             if (screamTarget != null && screamTarget.isAlive()) {
                 this.getLookControl().setLookAt(screamTarget, 30.0F, 30.0F);
+                double dx = screamTarget.getX() - this.getX();
+                double dz = screamTarget.getZ() - this.getZ();
+                float yaw = (float) (Math.atan2(dz, dx) * 180.0 / Math.PI) - 90.0F;
+                this.setYRot(yaw);
+                this.setYHeadRot(yaw);
+                this.setYBodyRot(yaw);
             }
             if (screamTimer == 0) {
                 this.setScreaming(false);
@@ -151,38 +156,62 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         int state = this.getTamedState();
         if (state == 1) {
             this.navigation.stop();
-            this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
         } else if (state == 2) {
             if (screamCooldown == 0 && screamTimer == 0) {
-                java.util.List<net.minecraft.world.entity.Mob> hostiles = this.level().getEntitiesOfClass(
-                    net.minecraft.world.entity.Mob.class,
-                    this.getBoundingBox().inflate(12.0),
-                    entity -> entity instanceof net.minecraft.world.entity.monster.Enemy && entity.isAlive() && this.getSensing().hasLineOfSight(entity)
-                );
-                if (!hostiles.isEmpty()) {
-                    net.minecraft.world.entity.Mob closest = null;
-                    double closestDist = Double.MAX_VALUE;
-                    for (net.minecraft.world.entity.Mob mob : hostiles) {
-                        double dist = this.distanceToSqr(mob);
-                        if (dist < closestDist) {
-                            closestDist = dist;
-                            closest = mob;
-                        }
+                LivingEntity target = null;
+                LivingEntity owner = this.getOwner();
+                if (owner != null) {
+                    LivingEntity playerTarget = owner.getLastHurtMob();
+                    if (playerTarget != null && playerTarget != owner && playerTarget != this && playerTarget.isAlive() && this.distanceToSqr(playerTarget) <= 144.0 && this.getSensing().hasLineOfSight(playerTarget)) {
+                        target = playerTarget;
                     }
-                    if (closest != null) {
-                        this.screamTarget = closest;
+                }
+                
+                if (target == null) {
+                    java.util.List<net.minecraft.world.entity.Mob> hostiles = this.level().getEntitiesOfClass(
+                        net.minecraft.world.entity.Mob.class,
+                        this.getBoundingBox().inflate(12.0),
+                        entity -> entity instanceof net.minecraft.world.entity.monster.Enemy && entity.isAlive() && this.getSensing().hasLineOfSight(entity)
+                    );
+                    if (!hostiles.isEmpty()) {
+                        net.minecraft.world.entity.Mob closest = null;
+                        double closestDist = Double.MAX_VALUE;
+                        for (net.minecraft.world.entity.Mob mob : hostiles) {
+                            double dist = this.distanceToSqr(mob);
+                            if (dist < closestDist) {
+                                closestDist = dist;
+                                closest = mob;
+                            }
+                        }
+                        target = closest;
+                    }
+                }
+
+                if (target != null) {
+                    double distSq = this.distanceToSqr(target);
+                    if (distSq <= 36.0) { // Max 6 blocks distance to scream (6*6 = 36)
+                        this.screamTarget = target;
                         this.screamTimer = 30;
                         this.screamCooldown = 120;
                         this.setScreaming(true);
                         this.navigation.stop();
-                        this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
-                        this.getLookControl().setLookAt(closest, 30.0F, 30.0F);
+                        
+                        double dx = target.getX() - this.getX();
+                        double dz = target.getZ() - this.getZ();
+                        float yaw = (float) (Math.atan2(dz, dx) * 180.0 / Math.PI) - 90.0F;
+                        this.setYRot(yaw);
+                        this.setYHeadRot(yaw);
+                        this.setYBodyRot(yaw);
 
                         int r = this.random.nextInt(3);
                         net.minecraft.sounds.SoundEvent screamSound = r == 0 ? pl.fuzjajadrowa.froggy.registry.FroggySounds.SCREAM1.get() : (r == 1 ? pl.fuzjajadrowa.froggy.registry.FroggySounds.SCREAM2.get() : pl.fuzjajadrowa.froggy.registry.FroggySounds.SCREAM3.get());
                         this.playSound(screamSound, 1.0F, 1.0F);
 
-                        closest.hurt(this.damageSources().mobAttack(this), (float) this.getScreamDamage());
+                        target.hurt(this.damageSources().mobAttack(this), (float) this.getScreamDamage());
+                    } else {
+                        // Approach target if too far
+                        this.navigation.moveTo(target, 1.25D);
+                        this.getLookControl().setLookAt(target, 30.0F, 30.0F);
                     }
                 }
             }
@@ -193,18 +222,32 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
     public void travel(net.minecraft.world.phys.Vec3 travelVector) {
         int state = this.getTamedState();
         if (state == 1 || this.isScreaming()) {
-            this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+            super.travel(net.minecraft.world.phys.Vec3.ZERO);
         } else {
             super.travel(travelVector);
         }
     }
 
     @Override
-    protected net.minecraft.world.InteractionResult mobInteract(Player player, net.minecraft.world.InteractionHand hand) {
+    public net.minecraft.world.InteractionResult mobInteract(Player player, net.minecraft.world.InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
         
         Optional<UUID> ownerOpt = this.getOwnerUUID();
         if (ownerOpt.isPresent() && ownerOpt.get().equals(player.getUUID())) {
+            if (itemStack.is(pl.fuzjajadrowa.froggy.registry.FroggyItems.FLY_IN_A_BOTTLE.get())) {
+                if (this.getHealth() < this.getMaxHealth()) {
+                    if (!player.getAbilities().instabuild) {
+                        itemStack.shrink(1);
+                    }
+                    this.heal(5.0F);
+                    this.level().playSound(null, this.getX(), this.getY(), this.getZ(), net.minecraft.sounds.SoundEvents.GENERIC_EAT, this.getSoundSource(), 1.0F, 1.0F);
+                    if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, this.getX(), this.getY() + 0.5, this.getZ(), 8, 0.2, 0.2, 0.2, 0.05);
+                    }
+                    return net.minecraft.world.InteractionResult.sidedSuccess(this.level().isClientSide());
+                }
+            }
+
             boolean upgraded = false;
             
             if (itemStack.is(pl.fuzjajadrowa.froggy.registry.FroggyItems.SPEAKER_UPGRADE.get())) {
@@ -244,7 +287,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                     if (!player.getAbilities().instabuild) {
                         itemStack.shrink(1);
                     }
-                    this.level().playSound(null, this.getX(), this.getY(), this.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, this.getSoundSource(), 1.0F, 1.2F);
+                    this.level().playSound(null, this.getX(), this.getY(), this.getZ(), net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP, this.getSoundSource(), 1.0F, 1.0F);
                     if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                         serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, this.getX(), this.getY() + 0.5, this.getZ(), 10, 0.2, 0.2, 0.2, 0.05);
                     }
@@ -377,12 +420,36 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
             this.frog.getNavigation().stop();
         }
 
+        private void teleportToOwner() {
+            net.minecraft.core.BlockPos blockpos = this.owner.blockPosition();
+            for (int i = 0; i < 10; ++i) {
+                int j = this.frog.getRandom().nextInt(7) - 3;
+                int k = this.frog.getRandom().nextInt(3) - 1;
+                int l = this.frog.getRandom().nextInt(7) - 3;
+                int tx = blockpos.getX() + j;
+                int ty = blockpos.getY() + k;
+                int tz = blockpos.getZ() + l;
+                net.minecraft.core.BlockPos targetPos = new net.minecraft.core.BlockPos(tx, ty, tz);
+                if (this.frog.level().getBlockState(targetPos).isAir() && 
+                    this.frog.level().getBlockState(targetPos.above()).isAir() && 
+                    !this.frog.level().getBlockState(targetPos.below()).isAir()) {
+                    this.frog.moveTo(tx + 0.5, ty, tz + 0.5, this.frog.getYRot(), this.frog.getXRot());
+                    this.frog.getNavigation().stop();
+                    return;
+                }
+            }
+        }
+
         @Override
         public void tick() {
             this.frog.getLookControl().setLookAt(this.owner, 10.0F, 10.0F);
             if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = 10;
-                this.frog.getNavigation().moveTo(this.owner, this.speed);
+                if (this.frog.distanceToSqr(this.owner) >= 144.0) {
+                    this.teleportToOwner();
+                } else {
+                    this.frog.getNavigation().moveTo(this.owner, this.speed);
+                }
             }
         }
     }
