@@ -59,6 +59,18 @@ public final class FroggyForge {
             () -> new pl.fuzjajadrowa.froggy.item.SweetBottleItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> FLY_IN_A_BOTTLE = ITEMS.register("fly_in_a_bottle",
             () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> SPEAKER_UPGRADE = ITEMS.register("speaker_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MEGAPHONE_UPGRADE = ITEMS.register("megaphone_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> AMPLIFIER_UPGRADE = ITEMS.register("amplifier_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> SMALL_POUCH_UPGRADE = ITEMS.register("small_pouch_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MEDIUM_POUCH_UPGRADE = ITEMS.register("medium_pouch_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> LARGE_POUCH_UPGRADE = ITEMS.register("large_pouch_upgrade",
+            () -> new Item(new Item.Properties()));
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
 
@@ -70,6 +82,12 @@ public final class FroggyForge {
                         output.accept(COUGH_SYRUP.get());
                         output.accept(SWEET_BOTTLE.get());
                         output.accept(FLY_IN_A_BOTTLE.get());
+                        output.accept(SPEAKER_UPGRADE.get());
+                        output.accept(MEGAPHONE_UPGRADE.get());
+                        output.accept(AMPLIFIER_UPGRADE.get());
+                        output.accept(SMALL_POUCH_UPGRADE.get());
+                        output.accept(MEDIUM_POUCH_UPGRADE.get());
+                        output.accept(LARGE_POUCH_UPGRADE.get());
                     })
                     .build());
 
@@ -93,6 +111,16 @@ public final class FroggyForge {
                     .sized(0.6f, 1.8f)
                     .build("froggy_bored"));
 
+    public static final RegistryObject<EntityType<pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity>> FROGGY_TAMED = ENTITY_TYPES.register("froggy_tamed",
+            () -> EntityType.Builder.of(pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity::new, MobCategory.CREATURE)
+                    .sized(0.6f, 1.8f)
+                    .build("froggy_tamed"));
+
+    public static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Froggy.MOD_ID);
+
+    public static final RegistryObject<net.minecraft.world.inventory.MenuType<pl.fuzjajadrowa.froggy.menu.FroggyTamedMenu>> FROGGY_TAMED_MENU = MENUS.register("froggy_tamed",
+            () -> net.minecraftforge.common.extensions.IForgeMenuType.create((windowId, inv, data) -> new pl.fuzjajadrowa.froggy.menu.FroggyTamedMenu(windowId, inv, data.readInt())));
+
     public FroggyForge() {
         Froggy.init();
 
@@ -102,6 +130,7 @@ public final class FroggyForge {
         ENTITY_TYPES.register(modEventBus);
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        MENUS.register(modEventBus);
 
         FroggySounds.SCREAM1 = SCREAM1;
         FroggySounds.SCREAM2 = SCREAM2;
@@ -117,10 +146,25 @@ public final class FroggyForge {
         FroggyEntities.JUMPSCARE = FROGGY_JUMPSCARE;
         FroggyEntities.SLEEPING = FROGGY_SLEEPING;
         FroggyEntities.BORED = FROGGY_BORED;
+        FroggyEntities.TAMED = FROGGY_TAMED;
 
         FroggyItems.COUGH_SYRUP = COUGH_SYRUP;
         FroggyItems.SWEET_BOTTLE = SWEET_BOTTLE;
         FroggyItems.FLY_IN_A_BOTTLE = FLY_IN_A_BOTTLE;
+        FroggyItems.SPEAKER_UPGRADE = SPEAKER_UPGRADE;
+        FroggyItems.MEGAPHONE_UPGRADE = MEGAPHONE_UPGRADE;
+        FroggyItems.AMPLIFIER_UPGRADE = AMPLIFIER_UPGRADE;
+        FroggyItems.SMALL_POUCH_UPGRADE = SMALL_POUCH_UPGRADE;
+        FroggyItems.MEDIUM_POUCH_UPGRADE = MEDIUM_POUCH_UPGRADE;
+        FroggyItems.LARGE_POUCH_UPGRADE = LARGE_POUCH_UPGRADE;
+
+        pl.fuzjajadrowa.froggy.registry.FroggyMenus.FROGGY_TAMED = FROGGY_TAMED_MENU;
+        pl.fuzjajadrowa.froggy.registry.FroggyMenus.openMenuDelegate = (player, froggy) -> {
+            net.minecraftforge.network.NetworkHooks.openScreen(player, new net.minecraft.world.SimpleMenuProvider(
+                (windowId, inv, p) -> new pl.fuzjajadrowa.froggy.menu.FroggyTamedMenu(windowId, inv, froggy),
+                net.minecraft.network.chat.Component.literal("Tamed Froggy")
+            ), buf -> buf.writeInt(froggy.getId()));
+        };
 
         // Register custom packets
         FroggyPackets.register();
@@ -128,6 +172,9 @@ public final class FroggyForge {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             pl.fuzjajadrowa.froggy.network.FroggyPacketSender.sender = (entityId, isCorrect) -> {
                 FroggyPackets.INSTANCE.sendToServer(new pl.fuzjajadrowa.froggy.network.FroggyCoughSyrupPacket(entityId, isCorrect));
+            };
+            pl.fuzjajadrowa.froggy.network.FroggyPacketSender.stateSender = (entityId, newState) -> {
+                FroggyPackets.INSTANCE.sendToServer(new pl.fuzjajadrowa.froggy.network.FroggyTamedStatePacket(entityId, newState));
             };
         }
 
@@ -147,6 +194,7 @@ public final class FroggyForge {
             event.put(FROGGY_JUMPSCARE.get(), FroggyEntities.FroggyJumpscareEntity.createAttributes().build());
             event.put(FROGGY_SLEEPING.get(), FroggySleepingEntity.createAttributes().build());
             event.put(FROGGY_BORED.get(), FroggyBoredEntity.createAttributes().build());
+            event.put(FROGGY_TAMED.get(), pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -155,10 +203,14 @@ public final class FroggyForge {
             event.registerEntityRenderer(FROGGY_JUMPSCARE.get(), FroggyRenderer::new);
             event.registerEntityRenderer(FROGGY_SLEEPING.get(), FroggySleepingRenderer::new);
             event.registerEntityRenderer(FROGGY_BORED.get(), FroggyRenderer::new);
+            event.registerEntityRenderer(FROGGY_TAMED.get(), FroggyRenderer::new);
         }
 
         @SubscribeEvent
         public static void onClientSetup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+            event.enqueueWork(() -> {
+                net.minecraft.client.gui.screens.MenuScreens.register(FROGGY_TAMED_MENU.get(), pl.fuzjajadrowa.froggy.client.FroggyTamedScreen::new);
+            });
             ModLoadingContext.get().registerExtensionPoint(
                 net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory(

@@ -53,6 +53,18 @@ public final class FroggyNeoForge {
             () -> new pl.fuzjajadrowa.froggy.item.SweetBottleItem(new Item.Properties().stacksTo(16)));
     public static final DeferredHolder<Item, Item> FLY_IN_A_BOTTLE = ITEMS.register("fly_in_a_bottle",
             () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final DeferredHolder<Item, Item> SPEAKER_UPGRADE = ITEMS.register("speaker_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MEGAPHONE_UPGRADE = ITEMS.register("megaphone_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> AMPLIFIER_UPGRADE = ITEMS.register("amplifier_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SMALL_POUCH_UPGRADE = ITEMS.register("small_pouch_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MEDIUM_POUCH_UPGRADE = ITEMS.register("medium_pouch_upgrade",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> LARGE_POUCH_UPGRADE = ITEMS.register("large_pouch_upgrade",
+            () -> new Item(new Item.Properties()));
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
 
@@ -64,6 +76,12 @@ public final class FroggyNeoForge {
                         output.accept(COUGH_SYRUP.get());
                         output.accept(SWEET_BOTTLE.get());
                         output.accept(FLY_IN_A_BOTTLE.get());
+                        output.accept(SPEAKER_UPGRADE.get());
+                        output.accept(MEGAPHONE_UPGRADE.get());
+                        output.accept(AMPLIFIER_UPGRADE.get());
+                        output.accept(SMALL_POUCH_UPGRADE.get());
+                        output.accept(MEDIUM_POUCH_UPGRADE.get());
+                        output.accept(LARGE_POUCH_UPGRADE.get());
                     })
                     .build());
 
@@ -87,6 +105,16 @@ public final class FroggyNeoForge {
                     .sized(0.6f, 1.8f)
                     .build("froggy_bored"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity>> FROGGY_TAMED = ENTITY_TYPES.register("froggy_tamed",
+            () -> EntityType.Builder.of(pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity::new, MobCategory.CREATURE)
+                    .sized(0.6f, 1.8f)
+                    .build("froggy_tamed"));
+
+    public static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(net.minecraft.core.registries.BuiltInRegistries.MENU, Froggy.MOD_ID);
+
+    public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>, net.minecraft.world.inventory.MenuType<pl.fuzjajadrowa.froggy.menu.FroggyTamedMenu>> FROGGY_TAMED_MENU = MENUS.register("froggy_tamed",
+            () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create((windowId, inv, data) -> new pl.fuzjajadrowa.froggy.menu.FroggyTamedMenu(windowId, inv, data.readInt())));
+
     public FroggyNeoForge(IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
         Froggy.init();
 
@@ -94,6 +122,7 @@ public final class FroggyNeoForge {
         ENTITY_TYPES.register(modEventBus);
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        MENUS.register(modEventBus);
 
         FroggySounds.SCREAM1 = SCREAM1;
         FroggySounds.SCREAM2 = SCREAM2;
@@ -109,16 +138,35 @@ public final class FroggyNeoForge {
         FroggyEntities.JUMPSCARE = FROGGY_JUMPSCARE;
         FroggyEntities.SLEEPING = FROGGY_SLEEPING;
         FroggyEntities.BORED = FROGGY_BORED;
+        FroggyEntities.TAMED = FROGGY_TAMED;
 
         FroggyItems.COUGH_SYRUP = COUGH_SYRUP;
         FroggyItems.SWEET_BOTTLE = SWEET_BOTTLE;
         FroggyItems.FLY_IN_A_BOTTLE = FLY_IN_A_BOTTLE;
+        FroggyItems.SPEAKER_UPGRADE = SPEAKER_UPGRADE;
+        FroggyItems.MEGAPHONE_UPGRADE = MEGAPHONE_UPGRADE;
+        FroggyItems.AMPLIFIER_UPGRADE = AMPLIFIER_UPGRADE;
+        FroggyItems.SMALL_POUCH_UPGRADE = SMALL_POUCH_UPGRADE;
+        FroggyItems.MEDIUM_POUCH_UPGRADE = MEDIUM_POUCH_UPGRADE;
+        FroggyItems.LARGE_POUCH_UPGRADE = LARGE_POUCH_UPGRADE;
+
+        pl.fuzjajadrowa.froggy.registry.FroggyMenus.FROGGY_TAMED = FROGGY_TAMED_MENU;
+        pl.fuzjajadrowa.froggy.registry.FroggyMenus.openMenuDelegate = (player, froggy) -> {
+            player.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                (windowId, inv, p) -> new pl.fuzjajadrowa.froggy.menu.FroggyTamedMenu(windowId, inv, froggy),
+                net.minecraft.network.chat.Component.literal("Tamed Froggy")
+            ), buf -> buf.writeInt(froggy.getId()));
+        };
 
         if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             pl.fuzjajadrowa.froggy.network.FroggyPacketSender.sender = (entityId, isCorrect) -> {
                 net.neoforged.neoforge.network.PacketDistributor.sendToServer(new pl.fuzjajadrowa.froggy.network.FroggyCoughSyrupPayload(entityId, isCorrect));
             };
+            pl.fuzjajadrowa.froggy.network.FroggyPacketSender.stateSender = (entityId, newState) -> {
+                net.neoforged.neoforge.network.PacketDistributor.sendToServer(new pl.fuzjajadrowa.froggy.network.FroggyTamedStatePayload(entityId, newState));
+            };
             ClientSetup.registerConfigScreen(modContainer);
+            modEventBus.addListener(ClientSetup::registerScreens);
         }
     }
 
@@ -128,6 +176,10 @@ public final class FroggyNeoForge {
                 net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
                 (container, parent) -> new pl.fuzjajadrowa.froggy.client.FroggyConfigScreen(parent)
             );
+        }
+
+        public static void registerScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+            event.register(FROGGY_TAMED_MENU.get(), pl.fuzjajadrowa.froggy.client.FroggyTamedScreen::new);
         }
     }
 
@@ -143,6 +195,7 @@ public final class FroggyNeoForge {
             event.put(FROGGY_JUMPSCARE.get(), FroggyEntities.FroggyJumpscareEntity.createAttributes().build());
             event.put(FROGGY_SLEEPING.get(), FroggySleepingEntity.createAttributes().build());
             event.put(FROGGY_BORED.get(), FroggyBoredEntity.createAttributes().build());
+            event.put(FROGGY_TAMED.get(), pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -151,6 +204,7 @@ public final class FroggyNeoForge {
             event.registerEntityRenderer(FROGGY_JUMPSCARE.get(), FroggyRenderer::new);
             event.registerEntityRenderer(FROGGY_SLEEPING.get(), FroggySleepingRenderer::new);
             event.registerEntityRenderer(FROGGY_BORED.get(), FroggyRenderer::new);
+            event.registerEntityRenderer(FROGGY_TAMED.get(), FroggyRenderer::new);
         }
 
         @SubscribeEvent
@@ -162,6 +216,20 @@ public final class FroggyNeoForge {
                 (payload, context) -> {
                     context.enqueueWork(() -> {
                         pl.fuzjajadrowa.froggy.entity.BaseFroggyEntity.handleCoughSyrupChoice(context.player(), payload.entityId(), payload.isCorrect());
+                    });
+                }
+            );
+            registrar.playToServer(
+                pl.fuzjajadrowa.froggy.network.FroggyTamedStatePayload.TYPE,
+                pl.fuzjajadrowa.froggy.network.FroggyTamedStatePayload.CODEC,
+                (payload, context) -> {
+                    context.enqueueWork(() -> {
+                        net.minecraft.world.entity.Entity entity = context.player().level().getEntity(payload.entityId());
+                        if (entity instanceof pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity froggy) {
+                            if (froggy.getOwnerUUID().isPresent() && froggy.getOwnerUUID().get().equals(context.player().getUUID())) {
+                                froggy.setTamedState(payload.newState());
+                            }
+                        }
                     });
                 }
             );

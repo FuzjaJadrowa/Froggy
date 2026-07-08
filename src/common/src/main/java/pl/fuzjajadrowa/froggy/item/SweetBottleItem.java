@@ -54,7 +54,12 @@ public class SweetBottleItem extends Item {
                     if (level.getServer() != null) {
                         level.getServer().execute(() -> {
                             serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundStopSoundPacket(
+//? if >=1.21.1 {
                                     ResourceLocation.fromNamespaceAndPath(pl.fuzjajadrowa.froggy.Froggy.MOD_ID, "buzz"),
+//?} else {
+/*                                    new ResourceLocation(pl.fuzjajadrowa.froggy.Froggy.MOD_ID, "buzz"),
+*/
+//?}
                                     SoundSource.PLAYERS
                             ));
                         });

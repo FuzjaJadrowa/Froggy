@@ -33,6 +33,12 @@
   "gui.froggy.config.server_managed": "Managed by Server (Read Only)",
   "item.froggy.sweet_bottle": "Sweet Bottle",
   "item.froggy.fly_in_a_bottle": "Fly in a Bottle",
+  "item.froggy.speaker_upgrade": "Speaker Upgrade",
+  "item.froggy.megaphone_upgrade": "Megaphone Upgrade",
+  "item.froggy.amplifier_upgrade": "Amplifier Upgrade",
+  "item.froggy.small_pouch_upgrade": "Small Pouch Upgrade",
+  "item.froggy.medium_pouch_upgrade": "Medium Pouch Upgrade",
+  "item.froggy.large_pouch_upgrade": "Large Pouch Upgrade",
   "subtitles.froggy.buzz": "Fly buzzing",
   "jei.froggy.fly_in_a_bottle.info": "To catch a fly in a bottle, right-click outdoors with a Sweet Bottle while under the open sky."
 }

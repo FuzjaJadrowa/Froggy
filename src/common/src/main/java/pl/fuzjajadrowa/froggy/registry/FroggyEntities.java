@@ -20,6 +20,7 @@ public class FroggyEntities {
     public static Supplier<EntityType<FroggyJumpscareEntity>> JUMPSCARE;
     public static Supplier<EntityType<FroggySleepingEntity>> SLEEPING;
     public static Supplier<EntityType<FroggyBoredEntity>> BORED;
+    public static Supplier<EntityType<pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity>> TAMED;
 
     public static class FroggyJumpscareEntity extends BaseFroggyEntity {
         private static final int STATE_APPROACHING = 0;

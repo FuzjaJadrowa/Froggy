@@ -33,6 +33,12 @@
   "gui.froggy.config.server_managed": "Ustawienia Serwera (Tylko do odczytu)",
   "item.froggy.sweet_bottle": "Słodka butelka",
   "item.froggy.fly_in_a_bottle": "Mucha w butelce",
+  "item.froggy.speaker_upgrade": "Ulepszenie: Głośnik",
+  "item.froggy.megaphone_upgrade": "Ulepszenie: Megafon",
+  "item.froggy.amplifier_upgrade": "Ulepszenie: Wzmacniacz",
+  "item.froggy.small_pouch_upgrade": "Ulepszenie: Mała sakwa",
+  "item.froggy.medium_pouch_upgrade": "Ulepszenie: Średnia sakwa",
+  "item.froggy.large_pouch_upgrade": "Ulepszenie: Wielka sakwa",
   "subtitles.froggy.buzz": "Mucha bzyczy",
   "jei.froggy.fly_in_a_bottle.info": "Aby złapać muchę do butelki, kliknij prawym przyciskiem myszy na zewnątrz (pod gołym niebem), trzymając Słodką butelkę."
 }

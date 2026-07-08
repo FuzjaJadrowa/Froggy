@@ -92,13 +92,13 @@ if (stonecutter.current.isActive) {
     rootProject.tasks.register("testClient") {
         group = "project"
         description = "Launches the client for testing the active NeoForge version."
-        dependsOn(tasks.named("clientRun"))
+        dependsOn(tasks.named("runClient"))
     }
 
     rootProject.tasks.register("testServer") {
         group = "project"
         description = "Launches the server for testing the active NeoForge version."
-        dependsOn(tasks.named("serverRun"))
+        dependsOn(tasks.named("runServer"))
     }
 }
 

@@ -21,5 +21,10 @@ public class FroggyPackets {
                 FroggyCoughSyrupPacket::decode,
                 FroggyCoughSyrupPacket::handle
         );
+        INSTANCE.registerMessage(id++, FroggyTamedStatePacket.class,
+                FroggyTamedStatePacket::encode,
+                FroggyTamedStatePacket::decode,
+                FroggyTamedStatePacket::handle
+        );
     }
 }
