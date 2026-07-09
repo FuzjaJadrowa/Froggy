@@ -8,7 +8,7 @@ modId = "${id}"
 version = "${version}"
 displayName = "${name}"
 authors = "FuzjaJadrowa"
-displayURL = "https://github.com/FuzjaJadrowa/Froggy"
+displayURL = "https://fuzjajadrowa.pl"
 logoFile = "assets/${id}/icon.png"
 description = '''Mod that adds Froggy screamer into the game.'''
 

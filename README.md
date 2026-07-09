@@ -20,12 +20,14 @@
 
 ## Features
 - This mod adds a funny entity called Froggy that can jumpscare you in the game.
-- The mod introduces 4 unique variants of the Froggy entity, each with its own behaviors that spawns randomly.
+- The mod introduces 5 unique variants of the Froggy entity, each with its own behaviors that spawns randomly.
 - The mod adds config GUI when you can customize spawn rates, disable some variants, etc.
 - The mod adds Cough Syrup for the Froggy that changes its behavior.
+- You can also tame a wild Froggy using a *Fly in a Bottle* and open Tamed Froggy inventory screen to switch between three behaviors and store your items.
 
 ## Credits
 - Inspiration of the [Screamer](https://www.curseforge.com/minecraft/mc-mods/screamer) mod under MIT license.
 - Sounds from the well-known memes.
+- Textures by ImpSteve.
 ## License
 This project is distributed under the **MIT** license.

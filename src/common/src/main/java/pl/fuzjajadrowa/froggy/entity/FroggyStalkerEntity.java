@@ -19,6 +19,7 @@ public class FroggyStalkerEntity extends BaseFroggyEntity {
     private int state = STATE_STALKING;
     private int stateTimer = 0;
     private int targetPlayerId = -1;
+    private int noLookTimer = 0;
 
     public FroggyStalkerEntity(EntityType<? extends FroggyStalkerEntity> entityType, Level level) {
         super(entityType, level);
@@ -49,12 +50,25 @@ public class FroggyStalkerEntity extends BaseFroggyEntity {
                 if (player != null && !player.isSpectator()) {
                     this.getLookControl().setLookAt(player, 10.0F, 10.0F);
                     this.setYRot(this.yHeadRot);
-                    
+
                     if (isPlayerLookingAtMe(player)) {
+                        this.noLookTimer = 0;
                         this.state = STATE_TELEPORTING;
                         this.stateTimer = 10;
                         this.setInvisible(true);
                         this.targetPlayerId = player.getId();
+                    } else {
+                        this.noLookTimer++;
+                        if (this.noLookTimer >= 1200) {
+                            this.discard();
+                            return;
+                        }
+                    }
+                } else {
+                    this.noLookTimer++;
+                    if (this.noLookTimer >= 1200) {
+                        this.discard();
+                        return;
                     }
                 }
                 break;
@@ -67,7 +81,7 @@ public class FroggyStalkerEntity extends BaseFroggyEntity {
                         teleportInFrontOfPlayer(target);
                         this.setInvisible(false);
                         this.state = STATE_CHARGING;
-                        this.stateTimer = 80;
+                        this.stateTimer = 120;
                     } else {
                         this.discard();
                     }

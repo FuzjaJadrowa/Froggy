@@ -243,18 +243,18 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
             boolean upgraded = false;
             
             if (itemStack.is(pl.fuzjajadrowa.froggy.registry.FroggyItems.SPEAKER_UPGRADE.get())) {
-                if (this.getScreamDamage() < 8) {
-                    this.setScreamDamage(8);
+                if (this.getScreamDamage() < pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl1) {
+                    this.setScreamDamage(pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl1);
                     upgraded = true;
                 }
             } else if (itemStack.is(pl.fuzjajadrowa.froggy.registry.FroggyItems.MEGAPHONE_UPGRADE.get())) {
-                if (this.getScreamDamage() < 13) {
-                    this.setScreamDamage(13);
+                if (this.getScreamDamage() < pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl2) {
+                    this.setScreamDamage(pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl2);
                     upgraded = true;
                 }
             } else if (itemStack.is(pl.fuzjajadrowa.froggy.registry.FroggyItems.AMPLIFIER_UPGRADE.get())) {
-                if (this.getScreamDamage() < 18) {
-                    this.setScreamDamage(18);
+                if (this.getScreamDamage() < pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl3) {
+                    this.setScreamDamage(pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl3);
                     upgraded = true;
                 }
             } else if (itemStack.is(pl.fuzjajadrowa.froggy.registry.FroggyItems.SMALL_POUCH_UPGRADE.get())) {

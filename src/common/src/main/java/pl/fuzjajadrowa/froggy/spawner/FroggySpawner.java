@@ -79,7 +79,10 @@ public class FroggySpawner {
         boolean alreadyHasAmbient = !level.getEntitiesOfClass(
             net.minecraft.world.entity.Mob.class,
             player.getBoundingBox().inflate(128.0),
-            entity -> entity instanceof FroggyStalkerEntity || entity instanceof FroggyEntities.FroggyJumpscareEntity || entity instanceof FroggyBoredEntity
+            entity -> entity instanceof FroggyStalkerEntity || 
+                      entity instanceof FroggyEntities.FroggyJumpscareEntity || 
+                      entity instanceof FroggyBoredEntity ||
+                      entity instanceof pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity
         ).isEmpty();
 
         if (alreadyHasAmbient) {
@@ -239,6 +242,14 @@ public class FroggySpawner {
     }
 
     private static void trySpawnSleepingFroggy(ServerPlayer player, ServerLevel level) {
+        boolean hasTamedNearby = !level.getEntitiesOfClass(
+            pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity.class,
+            player.getBoundingBox().inflate(128.0)
+        ).isEmpty();
+        if (hasTamedNearby) {
+            return;
+        }
+
         BlockPos playerPos = player.blockPosition();
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         List<BlockPos> beds = new ArrayList<>();

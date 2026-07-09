@@ -13,8 +13,8 @@ public class FroggyConfig {
     public static boolean spawnSleeping = true;
     public static boolean spawnBored = true;
 
-    public static int weightStalker = 25;
-    public static int weightJumpscare = 75;
+    public static int weightStalker = 30;
+    public static int weightJumpscare = 70;
     public static int weightBored = 10;
 
     public static int minSpawnRate = 18000;
@@ -23,8 +23,12 @@ public class FroggyConfig {
     public static int sleepingCheckInterval = 1200;
     public static double sleepingSpawnChance = 0.10;
 
+    public static int screamDamageLvl1 = 8;
+    public static int screamDamageLvl2 = 13;
+    public static int screamDamageLvl3 = 18;
+ 
     private static final File FILE = new File("config/froggy.json");
-
+ 
     public static void load() {
         if (!FILE.getParentFile().exists()) {
             FILE.getParentFile().mkdirs();
@@ -45,6 +49,9 @@ public class FroggyConfig {
                     if (json.has("maxRandomAdded")) maxRandomAdded = json.get("maxRandomAdded").getAsInt();
                     if (json.has("sleepingCheckInterval")) sleepingCheckInterval = json.get("sleepingCheckInterval").getAsInt();
                     if (json.has("sleepingSpawnChance")) sleepingSpawnChance = json.get("sleepingSpawnChance").getAsDouble();
+                    if (json.has("screamDamageLvl1")) screamDamageLvl1 = json.get("screamDamageLvl1").getAsInt();
+                    if (json.has("screamDamageLvl2")) screamDamageLvl2 = json.get("screamDamageLvl2").getAsInt();
+                    if (json.has("screamDamageLvl3")) screamDamageLvl3 = json.get("screamDamageLvl3").getAsInt();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -53,7 +60,7 @@ public class FroggyConfig {
             save();
         }
     }
-
+ 
     public static void save() {
         try (FileWriter writer = new FileWriter(FILE)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -69,6 +76,9 @@ public class FroggyConfig {
             json.addProperty("maxRandomAdded", maxRandomAdded);
             json.addProperty("sleepingCheckInterval", sleepingCheckInterval);
             json.addProperty("sleepingSpawnChance", sleepingSpawnChance);
+            json.addProperty("screamDamageLvl1", screamDamageLvl1);
+            json.addProperty("screamDamageLvl2", screamDamageLvl2);
+            json.addProperty("screamDamageLvl3", screamDamageLvl3);
             gson.toJson(json, writer);
         } catch (Exception e) {
             e.printStackTrace();

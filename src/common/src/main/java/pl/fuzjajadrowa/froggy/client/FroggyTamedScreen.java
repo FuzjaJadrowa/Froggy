@@ -109,7 +109,14 @@ public class FroggyTamedScreen extends AbstractContainerScreen<FroggyTamedMenu> 
             guiGraphics.drawString(this.font, Component.translatable("gui.froggy.tamed.inventory_level", invLvl), 10, 24, 4210752, false);
 
             int screamDmg = this.menu.getFroggy().getScreamDamage();
-            int screamLvl = screamDmg == 5 ? 0 : (screamDmg == 8 ? 1 : (screamDmg == 13 ? 2 : 3));
+            int screamLvl = 0;
+            if (screamDmg >= pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl3) {
+                screamLvl = 3;
+            } else if (screamDmg >= pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl2) {
+                screamLvl = 2;
+            } else if (screamDmg >= pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl1) {
+                screamLvl = 1;
+            }
             guiGraphics.drawString(this.font, Component.translatable("gui.froggy.tamed.scream_level", screamLvl), 10, 40, 4210752, false);
         }
 

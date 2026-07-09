@@ -1,9 +1,19 @@
-# 1.0.1
+# 1.1.0
+## Added
+- Added Tamed Froggy entity. You can now tame any Froggy using Fly in a bottle.
+- Added 6 upgrade items for Tamed Froggy. Textures by ImpSteve.
+- Add a custom screen for Tamed Froggy when you can set his behavior, store items and check his Inventory/Scream Level.
+- Added a Fly in a bottle. Used to tame and heal Froggy,
+- Added a Sweet bottle. Used to catch fly to the bottle.
+- Added new eating animation and eating sound. Played when feeding wild Froggies with food or Cough Syrup.
+- Added reward for good answer to cough question.
+- Added new texture for sleeping Froggy.
+- Added custom JEI information for Fly in a bottle.
+- Added 3 new config entries for Froggy scream levels.
 ## Changed
-- Changed speed of Froggy Jumpscare.
-- Changed Froggy spawn conditions.
-- Changed Froggy default spawn rate.
-- Changed builder for multiloading Stonecutter.
-- Removed support for Fabric.
+- Changed speed of Froggy fleeing.
+- Changed display URL in mod metadata.
+- Changed charging phase timer to 6 seconds for Froggy Stalker.
+- Changed default weights for Froggy types.
 ## Fixed
-- Fixed Bored Froggy TTS.
+- Fixed no animation for Froggy Jumpscare sneaking.

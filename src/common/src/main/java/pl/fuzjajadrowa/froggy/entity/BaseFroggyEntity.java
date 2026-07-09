@@ -198,6 +198,24 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
         if (itemStack.is(FroggyItems.FLY_IN_A_BOTTLE.get())) {
             if (!(this instanceof FroggyTamedEntity)) {
                 if (!this.level().isClientSide()) {
+                    boolean alreadyHasTamed = false;
+                    if (player.getServer() != null) {
+                        for (ServerLevel sl : player.getServer().getAllLevels()) {
+                            if (!sl.getEntities(
+                                net.minecraft.world.level.entity.EntityTypeTest.forClass(FroggyTamedEntity.class),
+                                tamed -> tamed.getOwnerUUID().isPresent() && tamed.getOwnerUUID().get().equals(player.getUUID())
+                            ).isEmpty()) {
+                                alreadyHasTamed = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (alreadyHasTamed) {
+                        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("chat.froggy.tamed_limit"), true);
+                        return net.minecraft.world.InteractionResult.sidedSuccess(this.level().isClientSide());
+                    }
+
                     if (!player.getAbilities().instabuild) {
                         itemStack.shrink(1);
                     }

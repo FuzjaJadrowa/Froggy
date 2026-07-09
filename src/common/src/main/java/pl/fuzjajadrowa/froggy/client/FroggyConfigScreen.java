@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
@@ -123,6 +124,36 @@ public class FroggyConfigScreen extends Screen {
                 value -> { FroggyConfig.sleepingCheckInterval = Math.round(value) * 20; FroggyConfig.save(); },
                 value -> Math.round(value) + "s");
         this.list.addEntry(Component.translatable("gui.froggy.config.sleep_check"), sleepCheckSlider);
+
+        // 12. Scream Damage Level 1 EditBox
+        EditBox screamLvl1Box = new EditBox(this.font, 0, 0, 120, 20,
+                Component.translatable("gui.froggy.config.scream_damage_lvl1"));
+        screamLvl1Box.setFilter(s -> s.isEmpty() || s.matches("\\d{1,4}"));
+        screamLvl1Box.setValue(String.valueOf(FroggyConfig.screamDamageLvl1));
+        screamLvl1Box.setResponder(s -> {
+            try { int v = Integer.parseInt(s); if (v > 0) { FroggyConfig.screamDamageLvl1 = v; FroggyConfig.save(); } } catch (NumberFormatException ignored) {}
+        });
+        this.list.addEntry(Component.translatable("gui.froggy.config.scream_damage_lvl1"), screamLvl1Box);
+
+        // 13. Scream Damage Level 2 EditBox
+        EditBox screamLvl2Box = new EditBox(this.font, 0, 0, 120, 20,
+                Component.translatable("gui.froggy.config.scream_damage_lvl2"));
+        screamLvl2Box.setFilter(s -> s.isEmpty() || s.matches("\\d{1,4}"));
+        screamLvl2Box.setValue(String.valueOf(FroggyConfig.screamDamageLvl2));
+        screamLvl2Box.setResponder(s -> {
+            try { int v = Integer.parseInt(s); if (v > 0) { FroggyConfig.screamDamageLvl2 = v; FroggyConfig.save(); } } catch (NumberFormatException ignored) {}
+        });
+        this.list.addEntry(Component.translatable("gui.froggy.config.scream_damage_lvl2"), screamLvl2Box);
+
+        // 14. Scream Damage Level 3 EditBox
+        EditBox screamLvl3Box = new EditBox(this.font, 0, 0, 120, 20,
+                Component.translatable("gui.froggy.config.scream_damage_lvl3"));
+        screamLvl3Box.setFilter(s -> s.isEmpty() || s.matches("\\d{1,4}"));
+        screamLvl3Box.setValue(String.valueOf(FroggyConfig.screamDamageLvl3));
+        screamLvl3Box.setResponder(s -> {
+            try { int v = Integer.parseInt(s); if (v > 0) { FroggyConfig.screamDamageLvl3 = v; FroggyConfig.save(); } } catch (NumberFormatException ignored) {}
+        });
+        this.list.addEntry(Component.translatable("gui.froggy.config.scream_damage_lvl3"), screamLvl3Box);
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
                 .bounds(this.width / 2 - 75, this.height - 30, 150, 20).build());
