@@ -16,7 +16,7 @@
 1. Ensure you are using a correct version of the mod loader.
 2. Download the correct jar for your loader: `*-fabric-*.jar` or `*-neoforge-*.jar`.
 3. Drop the downloaded mod into your `mods` folder along with **GeckoLib** (required).
-4. Launch the game. The mod is now installed, and you can configure it in Minecraft options (ModMenu for Fabric or default config screen for NeoForge).
+4. Launch the game. The mod is now installed, and you can configure it in Minecraft options.
 
 ## Features
 - This mod adds a funny entity called Froggy that can jumpscare you in the game.
