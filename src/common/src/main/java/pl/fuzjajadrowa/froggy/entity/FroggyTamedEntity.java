@@ -115,7 +115,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
             @Override
             public boolean canUse() {
                 int state = FroggyTamedEntity.this.getTamedState();
-                if (state == 1 || FroggyTamedEntity.this.isScreaming()) return false;
+                if (state == 1 || FroggyTamedEntity.this.isScreaming() || (state == 2 && FroggyTamedEntity.this.getAttackTarget() != null)) return false;
                 return super.canUse();
             }
         });
@@ -158,38 +158,10 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
             this.navigation.stop();
         } else if (state == 2) {
             if (screamCooldown == 0 && screamTimer == 0) {
-                LivingEntity target = null;
-                LivingEntity owner = this.getOwner();
-                if (owner != null) {
-                    LivingEntity playerTarget = owner.getLastHurtMob();
-                    if (playerTarget != null && playerTarget != owner && playerTarget != this && playerTarget.isAlive() && this.distanceToSqr(playerTarget) <= 144.0 && this.getSensing().hasLineOfSight(playerTarget)) {
-                        target = playerTarget;
-                    }
-                }
-                
-                if (target == null) {
-                    java.util.List<net.minecraft.world.entity.Mob> hostiles = this.level().getEntitiesOfClass(
-                        net.minecraft.world.entity.Mob.class,
-                        this.getBoundingBox().inflate(12.0),
-                        entity -> entity instanceof net.minecraft.world.entity.monster.Enemy && entity.isAlive() && this.getSensing().hasLineOfSight(entity)
-                    );
-                    if (!hostiles.isEmpty()) {
-                        net.minecraft.world.entity.Mob closest = null;
-                        double closestDist = Double.MAX_VALUE;
-                        for (net.minecraft.world.entity.Mob mob : hostiles) {
-                            double dist = this.distanceToSqr(mob);
-                            if (dist < closestDist) {
-                                closestDist = dist;
-                                closest = mob;
-                            }
-                        }
-                        target = closest;
-                    }
-                }
-
+                LivingEntity target = this.getAttackTarget();
                 if (target != null) {
                     double distSq = this.distanceToSqr(target);
-                    if (distSq <= 36.0) { // Max 6 blocks distance to scream (6*6 = 36)
+                    if (distSq <= 36.0) {
                         this.screamTarget = target;
                         this.screamTimer = 30;
                         this.screamCooldown = 120;
@@ -208,8 +180,28 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                         this.playSound(screamSound, 1.0F, 1.0F);
 
                         target.hurt(this.damageSources().mobAttack(this), (float) this.getScreamDamage());
+
+                        if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                            double startX = this.getX();
+                            double startY = this.getY() + this.getEyeHeight();
+                            double startZ = this.getZ();
+                            double endX = target.getX();
+                            double endY = target.getY() + target.getBbHeight() / 2.0;
+                            double endZ = target.getZ();
+                            double diffX = endX - startX;
+                            double diffY = endY - startY;
+                            double diffZ = endZ - startZ;
+                            double dist = Math.sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ);
+                            int steps = (int) (dist * 10);
+                            for (int i = 0; i <= steps; i++) {
+                                double ratio = (double) i / steps;
+                                double px = startX + diffX * ratio;
+                                double py = startY + diffY * ratio;
+                                double pz = startZ + diffZ * ratio;
+                                serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, px, py, pz, 1, 0.0, 0.0, 0.0, 0.0);
+                            }
+                        }
                     } else {
-                        // Approach target if too far
                         this.navigation.moveTo(target, 1.25D);
                         this.getLookControl().setLookAt(target, 30.0F, 30.0F);
                     }
@@ -376,6 +368,40 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         }
     }
 
+    public LivingEntity getAttackTarget() {
+        if (this.screamTarget != null && this.screamTarget.isAlive()) {
+            return this.screamTarget;
+        }
+
+        LivingEntity owner = this.getOwner();
+        if (owner != null) {
+            LivingEntity playerTarget = owner.getLastHurtMob();
+            if (playerTarget != null && playerTarget != owner && playerTarget != this && playerTarget.isAlive() && this.distanceToSqr(playerTarget) <= 144.0 && this.getSensing().hasLineOfSight(playerTarget)) {
+                return playerTarget;
+            }
+        }
+
+        java.util.List<net.minecraft.world.entity.Mob> hostiles = this.level().getEntitiesOfClass(
+            net.minecraft.world.entity.Mob.class,
+            this.getBoundingBox().inflate(12.0),
+            entity -> entity instanceof net.minecraft.world.entity.monster.Enemy && entity.isAlive() && this.getSensing().hasLineOfSight(entity)
+        );
+        if (!hostiles.isEmpty()) {
+            net.minecraft.world.entity.Mob closest = null;
+            double closestDist = Double.MAX_VALUE;
+            for (net.minecraft.world.entity.Mob mob : hostiles) {
+                double dist = this.distanceToSqr(mob);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closest = mob;
+                }
+            }
+            return closest;
+        }
+
+        return null;
+    }
+
     public static class FollowOwnerGoal extends net.minecraft.world.entity.ai.goal.Goal {
         private final FroggyTamedEntity frog;
         private LivingEntity owner;
@@ -390,7 +416,11 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
 
         @Override
         public boolean canUse() {
-            if (this.frog.getTamedState() != 0) {
+            int state = this.frog.getTamedState();
+            if (state != 0 && state != 2) {
+                return false;
+            }
+            if (this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null)) {
                 return false;
             }
             LivingEntity owner = this.frog.getOwner();
@@ -406,7 +436,14 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
 
         @Override
         public boolean canContinueToUse() {
-            return this.frog.getTamedState() == 0 && this.owner != null && this.owner.isAlive() && this.frog.distanceToSqr(this.owner) > 4.0;
+            int state = this.frog.getTamedState();
+            if (state != 0 && state != 2) {
+                return false;
+            }
+            if (this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null)) {
+                return false;
+            }
+            return this.owner != null && this.owner.isAlive() && this.frog.distanceToSqr(this.owner) > 4.0;
         }
 
         @Override

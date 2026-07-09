@@ -398,8 +398,10 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
             }
 
             double speedSq = this.getDeltaMovement().horizontalDistanceSqr();
-            if (speedSq > 0.01) {
-                if (this.isSprinting() || speedSq > 0.08 || state == STATE_INCORRECT_CHOICE) {
+            float walkSpeed = this.walkAnimation.speed();
+            boolean isMoving = walkSpeed > 0.01F || speedSq > 0.01;
+            if (isMoving) {
+                if (this.isSprinting() || speedSq > 0.08 || walkSpeed > 0.35F || state == STATE_INCORRECT_CHOICE) {
                     return event.setAndContinue(RawAnimation.begin().thenLoop("run"));
                 } else {
                     return event.setAndContinue(RawAnimation.begin().thenLoop("walk"));
