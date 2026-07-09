@@ -35,15 +35,15 @@ public class FroggyTamedScreen extends AbstractContainerScreen<FroggyTamedMenu> 
         int x = this.leftPos;
         int y = this.topPos;
 
-        this.btnFollow = this.addRenderableWidget(Button.builder(Component.literal("Follow"), button -> {
+        this.btnFollow = this.addRenderableWidget(Button.builder(Component.translatable("gui.froggy.tamed.follow"), button -> {
             FroggyPacketSender.sendTamedStateChange(this.menu.getFroggy().getId(), 0);
         }).bounds(x + 10, y + 86, 50, 20).build());
 
-        this.btnStay = this.addRenderableWidget(Button.builder(Component.literal("Stay"), button -> {
+        this.btnStay = this.addRenderableWidget(Button.builder(Component.translatable("gui.froggy.tamed.stay"), button -> {
             FroggyPacketSender.sendTamedStateChange(this.menu.getFroggy().getId(), 1);
         }).bounds(x + 10, y + 108, 50, 20).build());
 
-        this.btnPatrol = this.addRenderableWidget(Button.builder(Component.literal("Patrol"), button -> {
+        this.btnPatrol = this.addRenderableWidget(Button.builder(Component.translatable("gui.froggy.tamed.patrol"), button -> {
             FroggyPacketSender.sendTamedStateChange(this.menu.getFroggy().getId(), 2);
         }).bounds(x + 10, y + 130, 50, 20).build());
 
@@ -101,16 +101,16 @@ public class FroggyTamedScreen extends AbstractContainerScreen<FroggyTamedMenu> 
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, Component.literal("Tamed Froggy"), 10, 8, 4210752, false);
+        guiGraphics.drawString(this.font, this.title, 10, 8, 4210752, false);
 
         if (this.menu.getFroggy() != null) {
             int invSize = this.menu.getFroggy().getInventorySize();
             int invLvl = invSize == 3 ? 0 : (invSize == 9 ? 1 : (invSize == 18 ? 2 : 3));
-            guiGraphics.drawString(this.font, Component.literal("Inventory Level: " + invLvl + "/3"), 10, 24, 4210752, false);
+            guiGraphics.drawString(this.font, Component.translatable("gui.froggy.tamed.inventory_level", invLvl), 10, 24, 4210752, false);
 
             int screamDmg = this.menu.getFroggy().getScreamDamage();
             int screamLvl = screamDmg == 5 ? 0 : (screamDmg == 8 ? 1 : (screamDmg == 13 ? 2 : 3));
-            guiGraphics.drawString(this.font, Component.literal("Scream Level: " + screamLvl + "/3"), 10, 40, 4210752, false);
+            guiGraphics.drawString(this.font, Component.translatable("gui.froggy.tamed.scream_level", screamLvl), 10, 40, 4210752, false);
         }
 
         guiGraphics.drawString(this.font, this.playerInventoryTitle, 66, 75, 4210752, false);

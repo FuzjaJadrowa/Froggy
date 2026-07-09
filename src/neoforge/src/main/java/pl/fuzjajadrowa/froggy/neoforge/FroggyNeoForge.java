@@ -154,7 +154,7 @@ public final class FroggyNeoForge {
         pl.fuzjajadrowa.froggy.registry.FroggyMenus.openMenuDelegate = (player, froggy) -> {
             player.openMenu(new net.minecraft.world.SimpleMenuProvider(
                 (windowId, inv, p) -> new pl.fuzjajadrowa.froggy.menu.FroggyTamedMenu(windowId, inv, froggy),
-                net.minecraft.network.chat.Component.literal("Tamed Froggy")
+                net.minecraft.network.chat.Component.translatable("entity.froggy.froggy_tamed")
             ), buf -> buf.writeInt(froggy.getId()));
         };
 
