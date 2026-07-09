@@ -303,6 +303,12 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         super.die(source);
         if (!this.level().isClientSide()) {
             net.minecraft.world.Containers.dropContents(this.level(), this.blockPosition(), this.inventory);
+            if (this.level().getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_SHOWDEATHMESSAGES)) {
+                LivingEntity owner = this.getOwner();
+                if (owner instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                    serverPlayer.sendSystemMessage(this.getCombatTracker().getDeathMessage());
+                }
+            }
         }
     }
 

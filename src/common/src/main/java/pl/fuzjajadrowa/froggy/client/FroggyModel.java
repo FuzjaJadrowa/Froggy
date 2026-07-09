@@ -13,7 +13,7 @@ public class FroggyModel<T extends BaseFroggyEntity> extends GeoModel<T> {
 
     @Override
     public ResourceLocation getTextureResource(T animatable) {
-        if (animatable instanceof pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity sleeping && !sleeping.isScreaming()) {
+        if (animatable instanceof pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity sleeping && !sleeping.isScreaming() && sleeping.getEffectState() == 0) {
             return ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "textures/entity/froggy_sleeping.png");
         }
         return ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "textures/entity/froggy.png");
