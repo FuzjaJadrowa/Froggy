@@ -1,6 +1,6 @@
 {
 	"textures": {
-		"particle": "froggy:block/moss_block",
+		"particle": "minecraft:block/moss_block",
 		"all": "froggy:block/froggy_bed"
 	},
 	"elements": [
