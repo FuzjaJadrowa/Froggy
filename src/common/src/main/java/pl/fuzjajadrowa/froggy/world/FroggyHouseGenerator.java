@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -34,6 +35,11 @@ public class FroggyHouseGenerator {
 
             BlockPos targetPos = new BlockPos(x, surfaceY, z);
 
+            net.minecraft.world.level.block.state.BlockState surfaceBlock = level.getBlockState(targetPos);
+            if (!surfaceBlock.getFluidState().isEmpty()) {
+                continue;
+            }
+
             var biomeHolder = level.getBiome(targetPos);
             var biomeKey = biomeHolder.unwrapKey().orElse(null);
             if (biomeKey != null) {
@@ -53,8 +59,7 @@ public class FroggyHouseGenerator {
 
     private static boolean generateStructure(ServerLevel level, BlockPos surfacePos, RandomSource random) {
         StructureTemplateManager manager = level.getServer().getStructureManager();
-        
-        ResourceLocation structureId = 
+        ResourceLocation structureId =
             //? if >=1.21.1 {
             ResourceLocation.fromNamespaceAndPath("froggy", "froggy_house");
             //?} else {
@@ -69,8 +74,6 @@ public class FroggyHouseGenerator {
         StructureTemplate template = templateOpt.get();
         BlockPos placePos = new BlockPos(surfacePos.getX(), surfacePos.getY() - 4, surfacePos.getZ());
 
-
-
         StructurePlaceSettings settings = new StructurePlaceSettings()
                 .setIgnoreEntities(false)
                 .setMirror(net.minecraft.world.level.block.Mirror.NONE)
@@ -84,7 +87,7 @@ public class FroggyHouseGenerator {
             for (int dy = 0; dy < size.getY(); dy++) {
                 for (int dz = 0; dz < size.getZ(); dz++) {
                     mutablePos.set(placePos.getX() + dx, placePos.getY() + dy, placePos.getZ() + dz);
-                    
+
                     net.minecraft.world.level.block.state.BlockState blockState = level.getBlockState(mutablePos);
                     if (blockState.is(FroggyBlocks.PLAYER_PAINTING.get())) {
                         BlockEntity be = level.getBlockEntity(mutablePos);
@@ -95,7 +98,7 @@ public class FroggyHouseGenerator {
 
                     BlockEntity be = level.getBlockEntity(mutablePos);
                     if (be instanceof ChestBlockEntity chest) {
-                        ResourceLocation lootTableId = 
+                        ResourceLocation lootTableId =
                             //? if >=1.21.1 {
                             ResourceLocation.fromNamespaceAndPath("froggy", "chests/froggy_house");
                             //?} else {
@@ -103,7 +106,7 @@ public class FroggyHouseGenerator {
                             //?}
 
                         //? if >=1.21.1 {
-                        net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> lootTableKey = 
+                        net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> lootTableKey =
                             net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, lootTableId);
                         chest.setLootTable(lootTableKey, random.nextLong());
                         //?} else {

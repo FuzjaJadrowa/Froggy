@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MMM",
+    "SSS"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:moss_carpet"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "froggy:froggy_bed",
+    "count": 1
+  }
+}

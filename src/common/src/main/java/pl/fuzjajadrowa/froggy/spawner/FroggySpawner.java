@@ -34,8 +34,10 @@ public class FroggySpawner {
 
         ServerLevel level = player.serverLevel();
 
-        pl.fuzjajadrowa.froggy.world.FroggyWorldData worldData = pl.fuzjajadrowa.froggy.world.FroggyWorldData.get(level);
-        if (!worldData.isGenerated()) {
+        // Always use the overworld for world-wide SavedData
+        net.minecraft.server.level.ServerLevel overworld = level.getServer().overworld();
+        pl.fuzjajadrowa.froggy.world.FroggyWorldData worldData = pl.fuzjajadrowa.froggy.world.FroggyWorldData.get(overworld);
+        if (!worldData.isGenerated() && level.dimension().equals(net.minecraft.world.level.Level.OVERWORLD)) {
             pl.fuzjajadrowa.froggy.world.FroggyHouseGenerator.tryGenerate(level, worldData, player.blockPosition());
         }
 
