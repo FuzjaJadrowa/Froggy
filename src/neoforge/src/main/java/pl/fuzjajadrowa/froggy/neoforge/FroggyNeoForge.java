@@ -37,6 +37,7 @@ public final class FroggyNeoForge {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Froggy.MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Froggy.MOD_ID);
     public static final DeferredRegister<net.minecraft.world.level.block.Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Froggy.MOD_ID);
+    public static final DeferredRegister<net.minecraft.world.level.block.entity.BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Froggy.MOD_ID);
 
     public static final DeferredHolder<SoundEvent, SoundEvent> SCREAM1 = SOUNDS.register("scream1", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "scream1")));
     public static final DeferredHolder<SoundEvent, SoundEvent> SCREAM2 = SOUNDS.register("scream2", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "scream2")));
@@ -70,6 +71,12 @@ public final class FroggyNeoForge {
             () -> new pl.fuzjajadrowa.froggy.block.FroggyBedBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().strength(0.2F).sound(net.minecraft.world.level.block.SoundType.MOSS).noOcclusion()));
     public static final DeferredHolder<Item, Item> FROGGY_BED_ITEM = ITEMS.register("froggy_bed",
             () -> new net.minecraft.world.item.BlockItem(FROGGY_BED.get(), new Item.Properties().stacksTo(1)));
+    public static final DeferredHolder<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> PLAYER_PAINTING = BLOCKS.register("player_painting",
+            () -> new pl.fuzjajadrowa.froggy.block.PlayerPaintingBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().strength(0.2F).sound(net.minecraft.world.level.block.SoundType.WOOD).noOcclusion()));
+    public static final DeferredHolder<Item, Item> PLAYER_PAINTING_ITEM = ITEMS.register("player_painting",
+            () -> new net.minecraft.world.item.BlockItem(PLAYER_PAINTING.get(), new Item.Properties().stacksTo(16)));
+    public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>, net.minecraft.world.level.block.entity.BlockEntityType<pl.fuzjajadrowa.froggy.block.entity.PlayerPaintingBlockEntity>> PLAYER_PAINTING_BE = BLOCK_ENTITIES.register("player_painting",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(pl.fuzjajadrowa.froggy.block.entity.PlayerPaintingBlockEntity::new, PLAYER_PAINTING.get()).build(null));
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
 
@@ -88,6 +95,7 @@ public final class FroggyNeoForge {
                         output.accept(MEDIUM_POUCH_UPGRADE.get());
                         output.accept(LARGE_POUCH_UPGRADE.get());
                         output.accept(FROGGY_BED_ITEM.get());
+                        output.accept(PLAYER_PAINTING_ITEM.get());
                     })
                     .build());
 
@@ -132,6 +140,7 @@ public final class FroggyNeoForge {
         ENTITY_TYPES.register(modEventBus);
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
+        BLOCK_ENTITIES.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
         MENUS.register(modEventBus);
 
@@ -162,7 +171,10 @@ public final class FroggyNeoForge {
         FroggyItems.MEDIUM_POUCH_UPGRADE = MEDIUM_POUCH_UPGRADE;
         FroggyItems.LARGE_POUCH_UPGRADE = LARGE_POUCH_UPGRADE;
         FroggyItems.FROGGY_BED = FROGGY_BED_ITEM;
+        FroggyItems.PLAYER_PAINTING = PLAYER_PAINTING_ITEM;
         pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED = FROGGY_BED;
+        pl.fuzjajadrowa.froggy.registry.FroggyBlocks.PLAYER_PAINTING = PLAYER_PAINTING;
+        pl.fuzjajadrowa.froggy.registry.FroggyBlockEntities.PLAYER_PAINTING = PLAYER_PAINTING_BE;
 
         pl.fuzjajadrowa.froggy.registry.FroggyMenus.FROGGY_TAMED = FROGGY_TAMED_MENU;
         pl.fuzjajadrowa.froggy.registry.FroggyMenus.openMenuDelegate = (player, froggy) -> {
@@ -221,6 +233,7 @@ public final class FroggyNeoForge {
             event.registerEntityRenderer(FROGGY_BORED.get(), FroggyRenderer::new);
             event.registerEntityRenderer(FROGGY_TAMED.get(), FroggyRenderer::new);
             event.registerEntityRenderer(FROGGY_TRADER.get(), FroggyRenderer::new);
+            event.registerBlockEntityRenderer(PLAYER_PAINTING_BE.get(), pl.fuzjajadrowa.froggy.client.PlayerPaintingBlockEntityRenderer::new);
         }
 
         @SubscribeEvent
@@ -259,6 +272,11 @@ public final class FroggyNeoForge {
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
                 FroggySpawner.tickPlayer(serverPlayer);
             }
+        }
+
+        @SubscribeEvent
+        public static void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
+            pl.fuzjajadrowa.froggy.command.FroggyCommands.register(event.getDispatcher());
         }
     }
 }

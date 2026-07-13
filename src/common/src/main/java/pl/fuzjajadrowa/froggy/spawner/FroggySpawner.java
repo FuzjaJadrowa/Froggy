@@ -34,6 +34,11 @@ public class FroggySpawner {
 
         ServerLevel level = player.serverLevel();
 
+        pl.fuzjajadrowa.froggy.world.FroggyWorldData worldData = pl.fuzjajadrowa.froggy.world.FroggyWorldData.get(level);
+        if (!worldData.isGenerated()) {
+            pl.fuzjajadrowa.froggy.world.FroggyHouseGenerator.tryGenerate(level, worldData, player.blockPosition());
+        }
+
         if (FroggyConfig.spawnStalker || FroggyConfig.spawnJumpscare || FroggyConfig.spawnBored) {
             int cooldown = spawnCooldowns.computeIfAbsent(player, p -> getRandomCooldown(player.getRandom()));
             cooldown--;

@@ -14,4 +14,5 @@ public class FroggyItems {
     public static Supplier<Item> MEDIUM_POUCH_UPGRADE;
     public static Supplier<Item> LARGE_POUCH_UPGRADE;
     public static Supplier<Item> FROGGY_BED;
+    public static Supplier<Item> PLAYER_PAINTING;
 }

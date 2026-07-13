@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "froggy:block/player_painting", "y": 0 },
+    "facing=east": { "model": "froggy:block/player_painting", "y": 90 },
+    "facing=south": { "model": "froggy:block/player_painting", "y": 180 },
+    "facing=west": { "model": "froggy:block/player_painting", "y": 270 }
+  }
+}
