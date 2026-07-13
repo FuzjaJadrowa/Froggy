@@ -1,9 +1,7 @@
 {
-	"format_version": "1.21.11",
-	"credit": "Made with Blockbench",
 	"textures": {
-		"all": "straw_bed",
-		"particle": "block/straw_bed_particle"
+		"particle": "froggy:block/moss_block",
+		"all": "froggy:block/froggy_bed"
 	},
 	"elements": [
 		{

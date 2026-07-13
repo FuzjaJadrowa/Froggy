@@ -1,9 +1,7 @@
 {
-	"format_version": "1.21.11",
-	"credit": "Made with Blockbench",
 	"textures": {
-		"all": "straw_bed",
-		"particle": "block/straw_bed_particle"
+		"particle": "froggy:block/moss_block",
+		"all": "froggy:block/froggy_bed"
 	},
 	"elements": [
 		{
@@ -13,6 +11,7 @@
 			"faces": {
 				"north": {"uv": [4, 10.25, 8, 11.25], "texture": "#all", "cullface": "north"},
 				"east": {"uv": [0, 10.25, 4, 11.25], "texture": "#all", "cullface": "east"},
+				"south": {"uv": [4, 10.25, 8, 11.25], "texture": "#all", "cullface": "south"},
 				"west": {"uv": [8, 10.25, 12, 11.25], "texture": "#all", "cullface": "west"},
 				"up": {"uv": [8, 10.25, 4, 6.25], "texture": "#all"},
 				"down": {"uv": [12, 6.25, 8, 10.25], "texture": "#all", "cullface": "down"}

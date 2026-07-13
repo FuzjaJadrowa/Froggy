@@ -1,6 +1,7 @@
 {
   "entity.froggy.froggy_stalker": "Żabiec Stalker",
   "entity.froggy.froggy_jumpscare": "Żabiec Jumpscare",
+  "entity.froggy.froggy_trader": "Żabiec Kupiec",
   "entity.froggy.froggy_sleeping": "Żabiec Śpioch",
   "entity.froggy.froggy_bored": "Żabiec Znudzony",
   "entity.froggy.froggy_tamed": "Oswojony Żabiec",
@@ -50,5 +51,7 @@
   "item.froggy.medium_pouch_upgrade": "Ulepszenie: Średnia sakwa",
   "item.froggy.large_pouch_upgrade": "Ulepszenie: Wielka sakwa",
   "subtitles.froggy.buzz": "Mucha bzyczy",
-  "jei.froggy.fly_in_a_bottle.info": "Aby złapać muchę do butelki, kliknij prawym przyciskiem myszy na zewnątrz (pod gołym niebem), trzymając Słodką butelkę."
+  "jei.froggy.fly_in_a_bottle.info": "Aby złapać muchę do butelki, kliknij prawym przyciskiem myszy na zewnątrz (pod gołym niebem), trzymając Słodką butelkę.",
+  "block.froggy.froggy_bed": "Łóżko żabca",
+  "item.froggy.froggy_bed": "Łóżko żabca"
 }

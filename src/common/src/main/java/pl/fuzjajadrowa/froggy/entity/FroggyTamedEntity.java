@@ -16,12 +16,16 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
     public static final EntityDataAccessor<Integer> TAMED_STATE = SynchedEntityData.defineId(FroggyTamedEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> SCREAM_DAMAGE = SynchedEntityData.defineId(FroggyTamedEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> INVENTORY_SIZE = SynchedEntityData.defineId(FroggyTamedEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> SLEEPING_IN_BED = SynchedEntityData.defineId(FroggyTamedEntity.class, EntityDataSerializers.BOOLEAN);
 
     private final net.minecraft.world.SimpleContainer inventory = new net.minecraft.world.SimpleContainer(31);
 
     private int screamCooldown = 0;
     private int screamTimer = 0;
     private LivingEntity screamTarget = null;
+    public int sleepCooldown = 0;
+    private int bedSnoringTimer = 100;
+    public net.minecraft.core.BlockPos sleepingBedPos = null;
 
     public FroggyTamedEntity(EntityType<? extends FroggyTamedEntity> entityType, Level level) {
         super(entityType, level);
@@ -47,6 +51,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         builder.define(TAMED_STATE, 1);
         builder.define(SCREAM_DAMAGE, 5);
         builder.define(INVENTORY_SIZE, 3);
+        builder.define(SLEEPING_IN_BED, false);
     }
 //?} else {
 /*    @Override
@@ -56,9 +61,32 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         this.entityData.define(TAMED_STATE, 1);
         this.entityData.define(SCREAM_DAMAGE, 5);
         this.entityData.define(INVENTORY_SIZE, 3);
+        this.entityData.define(SLEEPING_IN_BED, false);
     }
 */
 //?}
+
+    public boolean isSleepingInBed() {
+        return this.entityData.get(SLEEPING_IN_BED);
+    }
+
+    public void setSleepingInBed(boolean sleeping) {
+        this.entityData.set(SLEEPING_IN_BED, sleeping);
+    }
+
+    public void wakeUpFromBed() {
+        if (this.isSleepingInBed()) {
+            this.setSleepingInBed(false);
+            this.sleepCooldown = 100; // 5 seconds
+            if (this.sleepingBedPos != null) {
+                net.minecraft.world.level.block.state.BlockState state = this.level().getBlockState(this.sleepingBedPos);
+                if (state.is(pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED.get())) {
+                    this.level().setBlock(this.sleepingBedPos, state.setValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.OCCUPIED, false), 3);
+                }
+                this.sleepingBedPos = null;
+            }
+        }
+    }
 
     public Optional<UUID> getOwnerUUID() {
         return this.entityData.get(OWNER_UUID);
@@ -156,26 +184,68 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new net.minecraft.world.entity.ai.goal.FloatGoal(this));
-        this.goalSelector.addGoal(1, new FollowOwnerGoal(this, 1.25D));
-        this.goalSelector.addGoal(2, new net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal(this, 1.0D) {
+        this.goalSelector.addGoal(1, new SleepInBedGoal(this));
+        this.goalSelector.addGoal(2, new FollowOwnerGoal(this, 1.25D));
+        this.goalSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal(this, 1.0D) {
             @Override
             public boolean canUse() {
                 int state = FroggyTamedEntity.this.getTamedState();
-                if (state == 1 || FroggyTamedEntity.this.isScreaming() || (state == 2 && FroggyTamedEntity.this.getAttackTarget() != null)) return false;
+                if (state == 1 || FroggyTamedEntity.this.isScreaming() || (state == 2 && FroggyTamedEntity.this.getAttackTarget() != null) || FroggyTamedEntity.this.isSleepingInBed()) return false;
                 return super.canUse();
             }
         });
-        this.goalSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.LookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(4, new net.minecraft.world.entity.ai.goal.LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(4, new net.minecraft.world.entity.ai.goal.RandomLookAroundGoal(this));
     }
 
     @Override
     public void tick() {
-        super.tick();
-
         if (this.level().isClientSide()) {
+            super.tick();
             return;
         }
+
+        if (this.sleepCooldown > 0) {
+            this.sleepCooldown--;
+        }
+
+        if (this.isSleepingInBed()) {
+            boolean shouldWakeUp = false;
+            if (this.sleepingBedPos == null) {
+                shouldWakeUp = true;
+            } else {
+                net.minecraft.world.level.block.state.BlockState state = this.level().getBlockState(this.sleepingBedPos);
+                if (!state.is(pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED.get())) {
+                    shouldWakeUp = true;
+                } else if (!this.level().isNight()) {
+                    shouldWakeUp = true;
+                }
+            }
+
+            if (shouldWakeUp) {
+                this.wakeUpFromBed();
+            } else {
+                net.minecraft.world.level.block.state.BlockState blockState = this.level().getBlockState(this.sleepingBedPos);
+                net.minecraft.core.Direction bedFacing = blockState.getValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.FACING);
+                float yaw = bedFacing.getOpposite().toYRot();
+                this.setYRot(yaw);
+                this.setYHeadRot(yaw);
+                this.setYBodyRot(yaw);
+                this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+                this.moveTo(this.sleepingBedPos.getX() + 0.5, this.sleepingBedPos.getY() + 0.25, this.sleepingBedPos.getZ() + 0.5, yaw, this.getXRot());
+                this.navigation.stop();
+
+                this.bedSnoringTimer--;
+                if (this.bedSnoringTimer <= 0) {
+                    this.playSound(pl.fuzjajadrowa.froggy.registry.FroggySounds.SLEEPING.get(), 0.6F, 1.0F);
+                    this.bedSnoringTimer = 1000 + this.random.nextInt(400);
+                }
+            }
+            super.tick();
+            return;
+        }
+
+        super.tick();
 
         if (screamCooldown > 0) {
             screamCooldown--;
@@ -259,7 +329,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
     @Override
     public void travel(net.minecraft.world.phys.Vec3 travelVector) {
         int state = this.getTamedState();
-        if (state == 1 || this.isScreaming()) {
+        if (state == 1 || this.isScreaming() || this.isSleepingInBed()) {
             super.travel(net.minecraft.world.phys.Vec3.ZERO);
         } else {
             super.travel(travelVector);
@@ -270,8 +340,37 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
     public net.minecraft.world.InteractionResult mobInteract(Player player, net.minecraft.world.InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
         
+        if (this.isSleepingInBed()) {
+            if (!this.level().isClientSide()) {
+                this.wakeUpFromBed();
+            }
+            return net.minecraft.world.InteractionResult.sidedSuccess(this.level().isClientSide());
+        }
+
         Optional<UUID> ownerOpt = this.getOwnerUUID();
         if (ownerOpt.isPresent() && ownerOpt.get().equals(player.getUUID())) {
+            //? if >=1.21.1 {
+            if (itemStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+            //?} else {
+            /* if (itemStack.getItem().isEdible()) { */
+            //?}
+                if (this.foodCooldown > 0) {
+                    return net.minecraft.world.InteractionResult.PASS;
+                }
+                this.setScreaming(false);
+                this.stopSoundsAndTTS();
+                ItemStack eaten = itemStack.copy();
+                eaten.setCount(1);
+                this.foodCooldown = 3600;
+                if (this.level().isClientSide()) {
+                    this.entityData.set(EFFECT_STATE, STATE_EATING_FOOD);
+                    this.entityData.set(EATEN_ITEM, eaten);
+                } else {
+                    this.feed(player, hand, eaten);
+                }
+                return net.minecraft.world.InteractionResult.sidedSuccess(this.level().isClientSide());
+            }
+
             if (itemStack.is(pl.fuzjajadrowa.froggy.registry.FroggyItems.FLY_IN_A_BOTTLE.get())) {
                 if (this.getHealth() < this.getMaxHealth()) {
                     if (!player.getAbilities().instabuild) {
@@ -367,6 +466,11 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         tag.putInt("TamedState", this.getTamedState());
         tag.putInt("ScreamDamage", this.getScreamDamage());
         tag.putInt("InventorySize", this.getInventorySize());
+        tag.putBoolean("SleepingInBed", this.isSleepingInBed());
+        if (this.sleepingBedPos != null) {
+            tag.putLong("SleepingBedPos", this.sleepingBedPos.asLong());
+        }
+        tag.putInt("SleepCooldown", this.sleepCooldown);
         
         net.minecraft.nbt.ListTag listTag = new net.minecraft.nbt.ListTag();
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
@@ -399,6 +503,15 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         }
         if (tag.contains("InventorySize")) {
             this.setInventorySize(tag.getInt("InventorySize"));
+        }
+        if (tag.contains("SleepingInBed")) {
+            this.setSleepingInBed(tag.getBoolean("SleepingInBed"));
+        }
+        if (tag.contains("SleepingBedPos")) {
+            this.sleepingBedPos = net.minecraft.core.BlockPos.of(tag.getLong("SleepingBedPos"));
+        }
+        if (tag.contains("SleepCooldown")) {
+            this.sleepCooldown = tag.getInt("SleepCooldown");
         }
         
         this.inventory.clearContent();
@@ -496,7 +609,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
             if (state != 0 && state != 2) {
                 return false;
             }
-            if (this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null)) {
+            if (this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null) || this.frog.isSleepingInBed()) {
                 return false;
             }
             LivingEntity owner = this.frog.getOwner();
@@ -516,7 +629,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
             if (state != 0 && state != 2) {
                 return false;
             }
-            if (this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null)) {
+            if (this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null) || this.frog.isSleepingInBed()) {
                 return false;
             }
             return this.owner != null && this.owner.isAlive() && this.frog.distanceToSqr(this.owner) > 4.0;
@@ -562,6 +675,134 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                     this.teleportToOwner();
                 } else {
                     this.frog.getNavigation().moveTo(this.owner, this.speed);
+                }
+            }
+        }
+    }
+
+    public static class SleepInBedGoal extends net.minecraft.world.entity.ai.goal.Goal {
+        private final FroggyTamedEntity frog;
+        private net.minecraft.core.BlockPos targetBedPos = null;
+        private int checkCooldown = 0;
+
+        public SleepInBedGoal(FroggyTamedEntity frog) {
+            this.frog = frog;
+            this.setFlags(java.util.EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            if (this.frog.isSleepingInBed()) {
+                return false;
+            }
+            if (this.frog.sleepCooldown > 0) {
+                return false;
+            }
+            if (!this.frog.level().isNight()) {
+                return false;
+            }
+            int state = this.frog.getTamedState();
+            if (state == 1 || this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null)) {
+                return false;
+            }
+
+            if (this.checkCooldown > 0) {
+                this.checkCooldown--;
+                return false;
+            }
+            this.checkCooldown = 40 + this.frog.getRandom().nextInt(40);
+
+            net.minecraft.core.BlockPos pos = this.frog.blockPosition();
+            net.minecraft.core.BlockPos.MutableBlockPos mutablePos = new net.minecraft.core.BlockPos.MutableBlockPos();
+            double closestDist = Double.MAX_VALUE;
+            net.minecraft.core.BlockPos closestBed = null;
+
+            int range = 16;
+            int yRange = 6;
+            for (int x = -range; x <= range; x++) {
+                for (int y = -yRange; y <= yRange; y++) {
+                    for (int z = -range; z <= range; z++) {
+                        mutablePos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+                        net.minecraft.world.level.block.state.BlockState blockState = this.frog.level().getBlockState(mutablePos);
+                        if (blockState.is(pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED.get())) {
+                            if (blockState.getValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.PART) == net.minecraft.world.level.block.state.properties.BedPart.HEAD && !blockState.getValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.OCCUPIED)) {
+                                double dist = this.frog.distanceToSqr(mutablePos.getX() + 0.5, mutablePos.getY() + 0.5, mutablePos.getZ() + 0.5);
+                                if (dist < closestDist) {
+                                    closestDist = dist;
+                                    closestBed = mutablePos.immutable();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (closestBed != null) {
+                this.targetBedPos = closestBed;
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            if (this.frog.isSleepingInBed()) {
+                return false;
+            }
+            if (!this.frog.level().isNight()) {
+                return false;
+            }
+            int state = this.frog.getTamedState();
+            if (state == 1 || this.frog.isScreaming() || (state == 2 && this.frog.getAttackTarget() != null)) {
+                return false;
+            }
+            if (this.targetBedPos == null) {
+                return false;
+            }
+            net.minecraft.world.level.block.state.BlockState blockState = this.frog.level().getBlockState(this.targetBedPos);
+            if (!blockState.is(pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED.get()) || blockState.getValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.OCCUPIED)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void start() {
+            this.frog.getNavigation().moveTo(this.targetBedPos.getX() + 0.5, this.targetBedPos.getY(), this.targetBedPos.getZ() + 0.5, 1.0D);
+        }
+
+        @Override
+        public void stop() {
+            this.targetBedPos = null;
+            this.frog.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            if (this.targetBedPos == null) return;
+            this.frog.getLookControl().setLookAt(this.targetBedPos.getX() + 0.5, this.targetBedPos.getY() + 0.5, this.targetBedPos.getZ() + 0.5, 10.0F, 10.0F);
+            
+            double dist = this.frog.distanceToSqr(this.targetBedPos.getX() + 0.5, this.targetBedPos.getY() + 0.25, this.targetBedPos.getZ() + 0.5);
+            if (dist <= 2.25) {
+                net.minecraft.world.level.block.state.BlockState blockState = this.frog.level().getBlockState(this.targetBedPos);
+                if (blockState.is(pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED.get()) && !blockState.getValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.OCCUPIED)) {
+                    this.frog.getNavigation().stop();
+                    this.frog.setSleepingInBed(true);
+                    this.frog.sleepingBedPos = this.targetBedPos;
+                    this.frog.level().setBlock(this.targetBedPos, blockState.setValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.OCCUPIED, true), 3);
+                    
+                    net.minecraft.core.Direction bedFacing = blockState.getValue(pl.fuzjajadrowa.froggy.block.FroggyBedBlock.FACING);
+                    float yaw = bedFacing.getOpposite().toYRot();
+                    this.frog.setYRot(yaw);
+                    this.frog.setYHeadRot(yaw);
+                    this.frog.setYBodyRot(yaw);
+                    this.frog.moveTo(this.targetBedPos.getX() + 0.5, this.targetBedPos.getY() + 0.25, this.targetBedPos.getZ() + 0.5, yaw, this.frog.getXRot());
+                }
+                this.stop();
+            } else {
+                if (this.frog.getNavigation().isDone() || this.frog.getRandom().nextInt(20) == 0) {
+                    this.frog.getNavigation().moveTo(this.targetBedPos.getX() + 0.5, this.targetBedPos.getY(), this.targetBedPos.getZ() + 0.5, 1.0D);
                 }
             }
         }

@@ -36,6 +36,7 @@ public final class FroggyNeoForge {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Froggy.MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Froggy.MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Froggy.MOD_ID);
+    public static final DeferredRegister<net.minecraft.world.level.block.Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Froggy.MOD_ID);
 
     public static final DeferredHolder<SoundEvent, SoundEvent> SCREAM1 = SOUNDS.register("scream1", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "scream1")));
     public static final DeferredHolder<SoundEvent, SoundEvent> SCREAM2 = SOUNDS.register("scream2", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Froggy.MOD_ID, "scream2")));
@@ -65,6 +66,10 @@ public final class FroggyNeoForge {
             () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> LARGE_POUCH_UPGRADE = ITEMS.register("large_pouch_upgrade",
             () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> FROGGY_BED = BLOCKS.register("froggy_bed",
+            () -> new pl.fuzjajadrowa.froggy.block.FroggyBedBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().strength(0.2F).sound(net.minecraft.world.level.block.SoundType.MOSS).noOcclusion()));
+    public static final DeferredHolder<Item, Item> FROGGY_BED_ITEM = ITEMS.register("froggy_bed",
+            () -> new net.minecraft.world.item.BlockItem(FROGGY_BED.get(), new Item.Properties().stacksTo(1)));
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
 
@@ -82,6 +87,7 @@ public final class FroggyNeoForge {
                         output.accept(SMALL_POUCH_UPGRADE.get());
                         output.accept(MEDIUM_POUCH_UPGRADE.get());
                         output.accept(LARGE_POUCH_UPGRADE.get());
+                        output.accept(FROGGY_BED_ITEM.get());
                     })
                     .build());
 
@@ -109,6 +115,10 @@ public final class FroggyNeoForge {
             () -> EntityType.Builder.of(pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity::new, MobCategory.CREATURE)
                     .sized(0.6f, 1.1f)
                     .build("froggy_tamed"));
+    public static final DeferredHolder<EntityType<?>, EntityType<pl.fuzjajadrowa.froggy.entity.FroggyTraderEntity>> FROGGY_TRADER = ENTITY_TYPES.register("froggy_trader",
+            () -> EntityType.Builder.of(pl.fuzjajadrowa.froggy.entity.FroggyTraderEntity::new, MobCategory.CREATURE)
+                    .sized(0.6f, 1.1f)
+                    .build("froggy_trader"));
 
     public static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(net.minecraft.core.registries.BuiltInRegistries.MENU, Froggy.MOD_ID);
 
@@ -120,6 +130,7 @@ public final class FroggyNeoForge {
 
         SOUNDS.register(modEventBus);
         ENTITY_TYPES.register(modEventBus);
+        BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
         MENUS.register(modEventBus);
@@ -139,6 +150,7 @@ public final class FroggyNeoForge {
         FroggyEntities.SLEEPING = FROGGY_SLEEPING;
         FroggyEntities.BORED = FROGGY_BORED;
         FroggyEntities.TAMED = FROGGY_TAMED;
+        FroggyEntities.TRADER = FROGGY_TRADER;
 
         FroggyItems.COUGH_SYRUP = COUGH_SYRUP;
         FroggyItems.SWEET_BOTTLE = SWEET_BOTTLE;
@@ -149,6 +161,8 @@ public final class FroggyNeoForge {
         FroggyItems.SMALL_POUCH_UPGRADE = SMALL_POUCH_UPGRADE;
         FroggyItems.MEDIUM_POUCH_UPGRADE = MEDIUM_POUCH_UPGRADE;
         FroggyItems.LARGE_POUCH_UPGRADE = LARGE_POUCH_UPGRADE;
+        FroggyItems.FROGGY_BED = FROGGY_BED_ITEM;
+        pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED = FROGGY_BED;
 
         pl.fuzjajadrowa.froggy.registry.FroggyMenus.FROGGY_TAMED = FROGGY_TAMED_MENU;
         pl.fuzjajadrowa.froggy.registry.FroggyMenus.openMenuDelegate = (player, froggy) -> {
@@ -196,6 +210,7 @@ public final class FroggyNeoForge {
             event.put(FROGGY_SLEEPING.get(), FroggySleepingEntity.createAttributes().build());
             event.put(FROGGY_BORED.get(), FroggyBoredEntity.createAttributes().build());
             event.put(FROGGY_TAMED.get(), pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity.createAttributes().build());
+            event.put(FROGGY_TRADER.get(), pl.fuzjajadrowa.froggy.entity.FroggyTraderEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -205,6 +220,7 @@ public final class FroggyNeoForge {
             event.registerEntityRenderer(FROGGY_SLEEPING.get(), FroggySleepingRenderer::new);
             event.registerEntityRenderer(FROGGY_BORED.get(), FroggyRenderer::new);
             event.registerEntityRenderer(FROGGY_TAMED.get(), FroggyRenderer::new);
+            event.registerEntityRenderer(FROGGY_TRADER.get(), FroggyRenderer::new);
         }
 
         @SubscribeEvent

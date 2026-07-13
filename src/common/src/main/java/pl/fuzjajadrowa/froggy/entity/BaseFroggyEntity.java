@@ -43,6 +43,7 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
     public static final int STATE_EATING_FOOD = 6;
 
     public static int lastInteractedEntityId = -1;
+    public int foodCooldown = 0;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -111,6 +112,10 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
 
     @Override
     public void tick() {
+        if (this.foodCooldown > 0) {
+            this.foodCooldown--;
+        }
+
         super.tick();
 
         if (this.level().isClientSide()) {
@@ -144,6 +149,10 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
                             serverLevel.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.4f, 0.25f, 0.1f), 1.5f), this.getX(), this.getY() + 0.2, this.getZ(), 15, 0.2, 0.2, 0.2, 0.05);
                         }
                     } else {
+                        if (this instanceof FroggyTamedEntity || this instanceof pl.fuzjajadrowa.froggy.entity.FroggyTraderEntity) {
+                            this.entityData.set(EFFECT_STATE, STATE_NONE);
+                            return;
+                        }
                         if (state == STATE_CORRECT_CHOICE) {
                             net.minecraft.core.BlockPos pos = this.blockPosition();
                             this.level().setBlock(pos, net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState(), 3);
@@ -277,13 +286,16 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
 //? if >=1.21.1 {
                 if (itemStack.has(net.minecraft.core.component.DataComponents.FOOD)) {
 //?} else {
-/*              if (itemStack.getItem().isEdible()) {
-*/
+                if (itemStack.getItem().isEdible()) {
 //?}
+                    if (this.foodCooldown > 0) {
+                        return InteractionResult.PASS;
+                    }
                     this.setScreaming(false);
                     this.stopSoundsAndTTS();
                     ItemStack eaten = itemStack.copy();
                     eaten.setCount(1);
+                    this.foodCooldown = 3600;
                     if (this.level().isClientSide()) {
                         this.entityData.set(EFFECT_STATE, STATE_EATING_FOOD);
                         this.entityData.set(EATEN_ITEM, eaten);
@@ -309,6 +321,7 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
         this.setScreaming(false);
         this.navigation.stop();
         this.setDeltaMovement(Vec3.ZERO);
+        this.foodCooldown = 3600;
     }
 
     private void openCoughSyrupScreen() {
@@ -373,6 +386,44 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
             return super.hurt(source, amount);
         }
         return false;
+    }
+
+    @Override
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("FoodCooldown", this.foodCooldown);
+        tag.putInt("EffectState", this.entityData.get(EFFECT_STATE));
+        tag.putInt("EffectTimer", this.entityData.get(EFFECT_TIMER));
+        //? if >=1.21.1 {
+        tag.put("EatenItem", this.entityData.get(EATEN_ITEM).saveOptional(this.registryAccess()));
+        //?} else {
+        /* net.minecraft.nbt.CompoundTag itemTag = new net.minecraft.nbt.CompoundTag();
+        this.entityData.get(EATEN_ITEM).save(itemTag);
+        tag.put("EatenItem", itemTag); */
+        //?}
+    }
+
+    @Override
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("FoodCooldown")) {
+            this.foodCooldown = tag.getInt("FoodCooldown");
+        }
+        if (tag.contains("EffectState")) {
+            this.entityData.set(EFFECT_STATE, tag.getInt("EffectState"));
+        }
+        if (tag.contains("EffectTimer")) {
+            this.entityData.set(EFFECT_TIMER, tag.getInt("EffectTimer"));
+        }
+        if (tag.contains("EatenItem")) {
+            //? if >=1.21.1 {
+            ItemStack stack = ItemStack.parse(this.registryAccess(), tag.getCompound("EatenItem")).orElse(ItemStack.EMPTY);
+            this.entityData.set(EATEN_ITEM, stack);
+            //?} else {
+            /* ItemStack stack = ItemStack.of(tag.getCompound("EatenItem"));
+            this.entityData.set(EATEN_ITEM, stack); */
+            //?}
+        }
     }
 
     @Override

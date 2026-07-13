@@ -1,0 +1,74 @@
+{
+	"textures": {
+		"particle": "froggy:block/moss_block",
+		"all": "froggy:block/froggy_bed"
+	},
+	"elements": [
+		{
+			"name": "head_pillow",
+			"from": [0, 0, -8],
+			"to": [16, 5, 0],
+			"faces": {
+				"north": {"uv": [2, 2, 6, 3.25], "texture": "#all"},
+				"south": {"uv": [8, 2, 12, 3.25], "texture": "#all"},
+				"east": {"uv": [0, 2, 2, 3.25], "texture": "#all"},
+				"west": {"uv": [6, 2, 8, 3.25], "texture": "#all"},
+				"up": {"uv": [6, 2, 2, 0], "texture": "#all"},
+				"down": {"uv": [10, 0, 6, 2], "texture": "#all"}
+			}
+		},
+		{
+			"name": "head_bed",
+			"from": [0, 0, 0],
+			"to": [16, 4, 8],
+			"faces": {
+				"south": {"uv": [8, 5.25, 12, 6.25], "texture": "#all"},
+				"east": {"uv": [0, 5.25, 2, 6.25], "texture": "#all"},
+				"west": {"uv": [6, 5.25, 8, 6.25], "texture": "#all"},
+				"up": {"uv": [6, 5.25, 2, 3.25], "texture": "#all"},
+				"down": {"uv": [10, 3.25, 6, 5.25], "texture": "#all"}
+			}
+		},
+		{
+			"name": "foot",
+			"from": [0, 0, 8],
+			"to": [16, 4, 24],
+			"faces": {
+				"north": {"uv": [4, 10.25, 8, 11.25], "texture": "#all"},
+				"south": {"uv": [4, 10.25, 8, 11.25], "texture": "#all"},
+				"east": {"uv": [0, 10.25, 4, 11.25], "texture": "#all"},
+				"west": {"uv": [8, 10.25, 12, 11.25], "texture": "#all"},
+				"up": {"uv": [8, 10.25, 4, 6.25], "texture": "#all"},
+				"down": {"uv": [12, 6.25, 8, 10.25], "texture": "#all"}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 1.5, 1.0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"firstperson_righthand": {
+			"rotation": [30, 225, 0],
+			"translation": [0, 2.0, 0],
+			"scale": [0.35, 0.35, 0.35]
+		},
+		"ground": {
+			"rotation": [0, 0, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.22, 0.22, 0.22]
+		},
+		"gui": {
+			"rotation": [30, 45, 0],
+			"translation": [0, 1.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"fixed": {
+			"rotation": [0, 180, 0],
+			"translation": [0, 0, 0],
+			"scale": [0.45, 0.45, 0.45]
+		}
+	}
+}

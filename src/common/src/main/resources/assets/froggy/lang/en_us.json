@@ -1,6 +1,7 @@
 {
   "entity.froggy.froggy_stalker": "Froggy Stalker",
   "entity.froggy.froggy_jumpscare": "Froggy Jumpscare",
+  "entity.froggy.froggy_trader": "Froggy Trader",
   "entity.froggy.froggy_sleeping": "Sleeping Froggy",
   "entity.froggy.froggy_bored": "Bored Froggy",
   "entity.froggy.froggy_tamed": "Tamed Froggy",
@@ -50,5 +51,7 @@
   "item.froggy.medium_pouch_upgrade": "Medium Pouch Upgrade",
   "item.froggy.large_pouch_upgrade": "Large Pouch Upgrade",
   "subtitles.froggy.buzz": "Fly buzzing",
-  "jei.froggy.fly_in_a_bottle.info": "To catch a fly in a bottle, right-click outdoors with a Sweet Bottle while under the open sky."
+  "jei.froggy.fly_in_a_bottle.info": "To catch a fly in a bottle, right-click outdoors with a Sweet Bottle while under the open sky.",
+  "block.froggy.froggy_bed": "Froggy Bed",
+  "item.froggy.froggy_bed": "Froggy Bed"
 }
