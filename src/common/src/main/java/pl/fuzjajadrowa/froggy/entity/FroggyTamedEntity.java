@@ -17,7 +17,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
     public static final EntityDataAccessor<Integer> SCREAM_DAMAGE = SynchedEntityData.defineId(FroggyTamedEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> INVENTORY_SIZE = SynchedEntityData.defineId(FroggyTamedEntity.class, EntityDataSerializers.INT);
 
-    private final net.minecraft.world.SimpleContainer inventory = new net.minecraft.world.SimpleContainer(27);
+    private final net.minecraft.world.SimpleContainer inventory = new net.minecraft.world.SimpleContainer(31);
 
     private int screamCooldown = 0;
     private int screamTimer = 0;
@@ -105,6 +105,52 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
 
     public net.minecraft.world.SimpleContainer getInventory() {
         return this.inventory;
+    }
+
+    @Override
+    public net.minecraft.world.item.ItemStack getItemBySlot(net.minecraft.world.entity.EquipmentSlot slot) {
+        boolean isArmor = false;
+        //? if >=1.21.1 {
+        isArmor = slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR;
+        //?} else {
+        /* isArmor = slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR; */
+        //?}
+        if (isArmor) {
+            int index = getArmorSlotIndex(slot);
+            if (index >= 0) {
+                return this.inventory.getItem(index);
+            }
+        }
+        return super.getItemBySlot(slot);
+    }
+
+    @Override
+    public void setItemSlot(net.minecraft.world.entity.EquipmentSlot slot, net.minecraft.world.item.ItemStack stack) {
+        boolean isArmor = false;
+        //? if >=1.21.1 {
+        isArmor = slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR;
+        //?} else {
+        /* isArmor = slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR; */
+        //?}
+        if (isArmor) {
+            int index = getArmorSlotIndex(slot);
+            if (index >= 0) {
+                this.inventory.setItem(index, stack);
+                super.setItemSlot(slot, stack);
+                return;
+            }
+        }
+        super.setItemSlot(slot, stack);
+    }
+
+    private int getArmorSlotIndex(net.minecraft.world.entity.EquipmentSlot slot) {
+        switch (slot) {
+            case HEAD: return 27;
+            case CHEST: return 28;
+            case LEGS: return 29;
+            case FEET: return 30;
+            default: return -1;
+        }
     }
 
     @Override
@@ -374,15 +420,39 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         }
     }
 
+    private boolean isFriendly(LivingEntity target) {
+        if (target == this) {
+            return true;
+        }
+
+        Optional<UUID> ownerUuidOpt = this.getOwnerUUID();
+        if (ownerUuidOpt.isPresent()) {
+            UUID ownerUuid = ownerUuidOpt.get();
+
+            // Owner
+            if (target.getUUID().equals(ownerUuid)) {
+                return true;
+            }
+
+            // Mobs owned by player
+            if (target instanceof net.minecraft.world.entity.OwnableEntity ownable) {
+                if (ownerUuid.equals(ownable.getOwnerUUID())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public LivingEntity getAttackTarget() {
-        if (this.screamTarget != null && this.screamTarget.isAlive()) {
+        if (this.screamTarget != null && this.screamTarget.isAlive() && !this.isFriendly(this.screamTarget)) {
             return this.screamTarget;
         }
 
         LivingEntity owner = this.getOwner();
         if (owner != null) {
             LivingEntity playerTarget = owner.getLastHurtMob();
-            if (playerTarget != null && playerTarget != owner && playerTarget != this && playerTarget.isAlive() && this.distanceToSqr(playerTarget) <= 144.0 && this.getSensing().hasLineOfSight(playerTarget)) {
+            if (playerTarget != null && playerTarget != owner && playerTarget != this && playerTarget.isAlive() && !this.isFriendly(playerTarget) && this.distanceToSqr(playerTarget) <= 144.0 && this.getSensing().hasLineOfSight(playerTarget)) {
                 return playerTarget;
             }
         }
@@ -390,7 +460,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         java.util.List<net.minecraft.world.entity.Mob> hostiles = this.level().getEntitiesOfClass(
             net.minecraft.world.entity.Mob.class,
             this.getBoundingBox().inflate(12.0),
-            entity -> entity instanceof net.minecraft.world.entity.monster.Enemy && entity.isAlive() && this.getSensing().hasLineOfSight(entity)
+            entity -> entity instanceof net.minecraft.world.entity.monster.Enemy && entity.isAlive() && !this.isFriendly(entity) && this.getSensing().hasLineOfSight(entity)
         );
         if (!hostiles.isEmpty()) {
             net.minecraft.world.entity.Mob closest = null;

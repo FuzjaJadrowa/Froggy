@@ -1,0 +1,58 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"all": "straw_bed",
+		"particle": "block/straw_bed_particle"
+	},
+	"elements": [
+		{
+			"name": "bed",
+			"from": [0, 0, 0],
+			"to": [16, 4, 16],
+			"faces": {
+				"north": {"uv": [4, 10.25, 8, 11.25], "texture": "#all", "cullface": "north"},
+				"east": {"uv": [0, 10.25, 4, 11.25], "texture": "#all", "cullface": "east"},
+				"west": {"uv": [8, 10.25, 12, 11.25], "texture": "#all", "cullface": "west"},
+				"up": {"uv": [8, 10.25, 4, 6.25], "texture": "#all"},
+				"down": {"uv": [12, 6.25, 8, 10.25], "texture": "#all", "cullface": "down"}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [30, -20, 0],
+			"translation": [0, 3, -2],
+			"scale": [0.23, 0.23, 0.23]
+		},
+		"firstperson_righthand": {
+			"rotation": [30, -20, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"ground": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 1, 2],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, -20, 0],
+			"translation": [2, 3, 0],
+			"scale": [0.5325, 0.5325, 0.5325]
+		},
+		"head": {
+			"translation": [0, 10, -8]
+		},
+		"fixed": {
+			"rotation": [-90, -180, 0],
+			"translation": [0, 4, -2],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"on_shelf": {
+			"rotation": [90, 0, 0],
+			"translation": [0, 14.5, 2.5],
+			"scale": [0.9375, 0.9375, 0.9375]
+		}
+	}
+}
