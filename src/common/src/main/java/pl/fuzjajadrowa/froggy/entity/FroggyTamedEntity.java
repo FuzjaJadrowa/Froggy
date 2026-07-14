@@ -87,7 +87,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
     @Override
     public net.minecraft.world.entity.EntityDimensions getDefaultDimensions(net.minecraft.world.entity.Pose pose) {
         if (this.isSleepingInBed()) {
-            return net.minecraft.world.entity.EntityDimensions.fixed(1.1F, 0.5F);
+            return net.minecraft.world.entity.EntityDimensions.fixed(0.8F, 0.5F);
         }
         return super.getDefaultDimensions(pose);
     }
@@ -95,7 +95,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
 /*    @Override
     public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
         if (this.isSleepingInBed()) {
-            return net.minecraft.world.entity.EntityDimensions.fixed(1.1F, 0.5F);
+            return net.minecraft.world.entity.EntityDimensions.fixed(0.8F, 0.5F);
         }
         return super.getDimensions(pose);
     }
