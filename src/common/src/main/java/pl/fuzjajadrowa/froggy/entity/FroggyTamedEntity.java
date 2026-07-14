@@ -72,7 +72,35 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
 
     public void setSleepingInBed(boolean sleeping) {
         this.entityData.set(SLEEPING_IN_BED, sleeping);
+        this.refreshDimensions();
     }
+
+    @Override
+    public void onSyncedDataUpdated(net.minecraft.network.syncher.EntityDataAccessor<?> key) {
+        if (SLEEPING_IN_BED.equals(key)) {
+            this.refreshDimensions();
+        }
+        super.onSyncedDataUpdated(key);
+    }
+
+//? if >=1.21.1 {
+    @Override
+    public net.minecraft.world.entity.EntityDimensions getDefaultDimensions(net.minecraft.world.entity.Pose pose) {
+        if (this.isSleepingInBed()) {
+            return net.minecraft.world.entity.EntityDimensions.fixed(1.1F, 0.5F);
+        }
+        return super.getDefaultDimensions(pose);
+    }
+//?} else {
+/*    @Override
+    public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+        if (this.isSleepingInBed()) {
+            return net.minecraft.world.entity.EntityDimensions.fixed(1.1F, 0.5F);
+        }
+        return super.getDimensions(pose);
+    }
+*/
+//?}
 
     public void wakeUpFromBed() {
         if (this.isSleepingInBed()) {
@@ -232,7 +260,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                 this.setYHeadRot(yaw);
                 this.setYBodyRot(yaw);
                 this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
-                this.moveTo(this.sleepingBedPos.getX() + 0.5, this.sleepingBedPos.getY() + 0.25, this.sleepingBedPos.getZ() + 0.5, yaw, this.getXRot());
+                this.moveTo(this.sleepingBedPos.getX() + 0.5, this.sleepingBedPos.getY() + 0.25, this.sleepingBedPos.getZ() + 0.70, yaw, this.getXRot());
                 this.navigation.stop();
 
                 this.bedSnoringTimer--;
@@ -441,6 +469,14 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         }
         
         return net.minecraft.world.InteractionResult.PASS;
+    }
+
+    @Override
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
+        if (this.isSleepingInBed()) {
+            this.wakeUpFromBed();
+        }
+        return super.hurt(source, amount);
     }
 
     @Override

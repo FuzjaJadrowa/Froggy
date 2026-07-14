@@ -91,6 +91,7 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
     private void wakeUp(Player player) {
         this.setScreaming(true);
         this.disappearTimer = 40;
+        this.refreshDimensions();
 
         for (ServerPlayer serverPlayer : this.level().getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(32.0))) {
             serverPlayer.connection.send(new ClientboundStopSoundPacket(FroggySounds.SLEEPING.get().getLocation(), SoundSource.NEUTRAL));
@@ -103,4 +104,31 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
         this.lookAt(player, 180.0F, 180.0F);
         this.setYRot(this.yHeadRot);
     }
+
+    @Override
+    public void onSyncedDataUpdated(net.minecraft.network.syncher.EntityDataAccessor<?> key) {
+        if (SCREAMING.equals(key)) {
+            this.refreshDimensions();
+        }
+        super.onSyncedDataUpdated(key);
+    }
+
+//? if >=1.21.1 {
+    @Override
+    public net.minecraft.world.entity.EntityDimensions getDefaultDimensions(net.minecraft.world.entity.Pose pose) {
+        if (!this.isScreaming() && this.getEffectState() == 0) {
+            return net.minecraft.world.entity.EntityDimensions.fixed(1.1F, 0.5F);
+        }
+        return super.getDefaultDimensions(pose);
+    }
+//?} else {
+/*    @Override
+    public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+        if (!this.isScreaming() && this.getEffectState() == 0) {
+            return net.minecraft.world.entity.EntityDimensions.fixed(1.1F, 0.5F);
+        }
+        return super.getDimensions(pose);
+    }
+*/
+//?}
 }

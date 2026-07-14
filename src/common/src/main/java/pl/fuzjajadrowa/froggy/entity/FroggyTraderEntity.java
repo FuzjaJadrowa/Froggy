@@ -195,7 +195,7 @@ public class FroggyTraderEntity extends BaseFroggyEntity implements Merchant {
             this.stopSoundsAndTTS();
             ItemStack eaten = itemStack.copy();
             eaten.setCount(1);
-            this.foodCooldown = 3600; // 3 minutes
+            this.foodCooldown = 3600;
             if (this.level().isClientSide()) {
                 this.entityData.set(EFFECT_STATE, STATE_EATING_FOOD);
                 this.entityData.set(EATEN_ITEM, eaten);

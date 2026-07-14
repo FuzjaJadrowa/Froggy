@@ -42,6 +42,8 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
     public static final int STATE_WAITING_FOR_CHOICE = 5;
     public static final int STATE_EATING_FOOD = 6;
 
+    public static final double FLEE_SPEED = 1.5D;
+
     public static int lastInteractedEntityId = -1;
     public int foodCooldown = 0;
 
@@ -183,7 +185,7 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
                             direction = new Vec3(this.random.nextDouble() - 0.5, 0, this.random.nextDouble() - 0.5);
                         }
                         Vec3 target = this.position().add(direction.normalize().scale(16));
-                        this.navigation.moveTo(target.x, target.y, target.z, 1.4); // reduced to 1.4
+                        this.navigation.moveTo(target.x, target.y, target.z, FLEE_SPEED);
                     }
                 }
             }

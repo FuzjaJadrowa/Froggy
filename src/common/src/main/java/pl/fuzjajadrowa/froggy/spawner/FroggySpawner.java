@@ -14,6 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import pl.fuzjajadrowa.froggy.registry.FroggyEntities;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
+import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyBoredEntity;
 import pl.fuzjajadrowa.froggy.config.FroggyConfig;
 
@@ -87,7 +88,7 @@ public class FroggySpawner {
             net.minecraft.world.entity.Mob.class,
             player.getBoundingBox().inflate(128.0),
             entity -> entity instanceof FroggyStalkerEntity || 
-                      entity instanceof FroggyEntities.FroggyJumpscareEntity || 
+                      entity instanceof FroggyJumpscareEntity || 
                       entity instanceof FroggyBoredEntity ||
                       entity instanceof pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity
         ).isEmpty();
@@ -211,7 +212,7 @@ public class FroggySpawner {
                 double dot = look.dot(toSpawn);
                 
                 if (dot < 0.3) {
-                    FroggyEntities.FroggyJumpscareEntity jumpscare = FroggyEntities.JUMPSCARE.get().create(level);
+                    FroggyJumpscareEntity jumpscare = FroggyEntities.JUMPSCARE.get().create(level);
                     if (jumpscare != null) {
                         jumpscare.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
                         level.addFreshEntity(jumpscare);
@@ -293,8 +294,8 @@ public class FroggySpawner {
                 FroggySleepingEntity sleeping = FroggyEntities.SLEEPING.get().create(level);
                 if (sleeping != null) {
                     Direction facing = bedState.hasProperty(BedBlock.FACING) ? bedState.getValue(BedBlock.FACING) : Direction.NORTH;
-                    float yaw = facing.toYRot();
-                    sleeping.moveTo(bedPos.getX() + 0.5, bedPos.getY() + 0.56, bedPos.getZ() + 0.5, yaw, 0.0F);
+                    float yaw = facing.getOpposite().toYRot();
+                    sleeping.moveTo(bedPos.getX() + 0.5, bedPos.getY() + 0.56, bedPos.getZ() + 0.70, yaw, 0.0F);
                     sleeping.setYBodyRot(yaw);
                     sleeping.setYHeadRot(yaw);
                     level.addFreshEntity(sleeping);

@@ -110,8 +110,8 @@ public final class FroggyForge {
                     .sized(0.6f, 1.1f)
                     .build("froggy_stalker"));
 
-    public static final RegistryObject<EntityType<FroggyEntities.FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
-            () -> EntityType.Builder.of(FroggyEntities.FroggyJumpscareEntity::new, MobCategory.MONSTER)
+    public static final RegistryObject<EntityType<FroggyJumpscareEntity>> FROGGY_JUMPSCARE = ENTITY_TYPES.register("froggy_jumpscare",
+            () -> EntityType.Builder.of(FroggyJumpscareEntity::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.1f)
                     .build("froggy_jumpscare"));
 
@@ -216,7 +216,7 @@ public final class FroggyForge {
         @SubscribeEvent
         public static void registerAttributes(EntityAttributeCreationEvent event) {
             event.put(FROGGY_STALKER.get(), FroggyStalkerEntity.createAttributes().build());
-            event.put(FROGGY_JUMPSCARE.get(), FroggyEntities.FroggyJumpscareEntity.createAttributes().build());
+            event.put(FROGGY_JUMPSCARE.get(), FroggyJumpscareEntity.createAttributes().build());
             event.put(FROGGY_SLEEPING.get(), FroggySleepingEntity.createAttributes().build());
             event.put(FROGGY_BORED.get(), FroggyBoredEntity.createAttributes().build());
             event.put(FROGGY_TAMED.get(), pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity.createAttributes().build());

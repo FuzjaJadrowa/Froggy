@@ -90,7 +90,7 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
                         direction = new Vec3(this.random.nextDouble() - 0.5, 0, this.random.nextDouble() - 0.5);
                     }
                     this.fleeTarget = this.position().add(direction.normalize().scale(16));
-                    this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, 1.4);
+                    this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, FLEE_SPEED);
                 }
                 break;
         }
@@ -127,6 +127,6 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
             direction = new Vec3(this.random.nextDouble() - 0.5, 0, this.random.nextDouble() - 0.5);
         }
         this.fleeTarget = this.position().add(direction.normalize().scale(16));
-        this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, 1.4);
+        this.navigation.moveTo(this.fleeTarget.x, this.fleeTarget.y, this.fleeTarget.z, FLEE_SPEED);
     }
 }
