@@ -196,10 +196,7 @@ public class FroggyTraderEntity extends BaseFroggyEntity implements Merchant {
             ItemStack eaten = itemStack.copy();
             eaten.setCount(1);
             this.foodCooldown = 3600;
-            if (this.level().isClientSide()) {
-                this.entityData.set(EFFECT_STATE, STATE_EATING_FOOD);
-                this.entityData.set(EATEN_ITEM, eaten);
-            } else {
+            if (!this.level().isClientSide()) {
                 this.feed(player, hand, eaten);
             }
             return InteractionResult.sidedSuccess(this.level().isClientSide());

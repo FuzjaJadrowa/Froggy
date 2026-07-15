@@ -28,6 +28,6 @@
 ## Credits
 - Inspiration of the [Screamer](https://www.curseforge.com/minecraft/mc-mods/screamer) mod under MIT license.
 - Sounds from the well-known memes.
-- Textures by ImpSteve.
+- Textures and model by ImpSteve.
 ## License
 This project is distributed under the **MIT** license.

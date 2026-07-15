@@ -29,17 +29,16 @@ public class FroggySpawner {
     private static int totalOtherSpawns = 0;
 
     public static void tickPlayer(ServerPlayer player) {
-        if (player.isSpectator() || player.isCreative()) {
-            return;
-        }
-
         ServerLevel level = player.serverLevel();
 
-        // Always use the overworld for world-wide SavedData
         net.minecraft.server.level.ServerLevel overworld = level.getServer().overworld();
         pl.fuzjajadrowa.froggy.world.FroggyWorldData worldData = pl.fuzjajadrowa.froggy.world.FroggyWorldData.get(overworld);
         if (!worldData.isGenerated() && level.dimension().equals(net.minecraft.world.level.Level.OVERWORLD)) {
             pl.fuzjajadrowa.froggy.world.FroggyHouseGenerator.tryGenerate(level, worldData, player.blockPosition());
+        }
+
+        if (player.isSpectator() || player.isCreative()) {
+            return;
         }
 
         if (FroggyConfig.spawnStalker || FroggyConfig.spawnJumpscare || FroggyConfig.spawnBored) {
