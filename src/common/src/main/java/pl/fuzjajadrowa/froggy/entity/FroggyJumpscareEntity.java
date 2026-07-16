@@ -20,9 +20,15 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
     private int screamTimer = 0;
     private int fleeTimer = 0;
     private Vec3 fleeTarget = null;
+    private boolean fromChest = false;
 
     public FroggyJumpscareEntity(EntityType<? extends FroggyJumpscareEntity> entityType, Level level) {
         super(entityType, level);
+    }
+
+    public void setFromChest(boolean fromChest) {
+        this.fromChest = fromChest;
+        this.noPhysics = fromChest;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -36,6 +42,17 @@ public class FroggyJumpscareEntity extends BaseFroggyEntity {
         super.tick();
 
         if (this.level().isClientSide()) {
+            return;
+        }
+
+        if (this.fromChest) {
+            this.navigation.stop();
+            this.setDeltaMovement(Vec3.ZERO);
+            Player player = this.level().getNearestPlayer(this, 30.0);
+            if (player != null) {
+                this.lookAt(player, 180.0F, 180.0F);
+                this.setYRot(this.yHeadRot);
+            }
             return;
         }
 

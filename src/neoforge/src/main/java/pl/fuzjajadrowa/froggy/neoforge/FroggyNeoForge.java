@@ -78,6 +78,12 @@ public final class FroggyNeoForge {
             () -> new net.minecraft.world.item.BlockItem(PLAYER_PAINTING.get(), new Item.Properties().stacksTo(16)));
     public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>, net.minecraft.world.level.block.entity.BlockEntityType<pl.fuzjajadrowa.froggy.block.entity.PlayerPaintingBlockEntity>> PLAYER_PAINTING_BE = BLOCK_ENTITIES.register("player_painting",
             () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(pl.fuzjajadrowa.froggy.block.entity.PlayerPaintingBlockEntity::new, PLAYER_PAINTING.get()).build(null));
+    public static final DeferredHolder<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> FROGGY_TRAPPED_CHEST = BLOCKS.register("froggy_trapped_chest",
+            () -> new pl.fuzjajadrowa.froggy.block.FroggyTrappedChestBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().strength(2.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final DeferredHolder<Item, Item> FROGGY_TRAPPED_CHEST_ITEM = ITEMS.register("froggy_trapped_chest",
+            () -> new net.minecraft.world.item.BlockItem(FROGGY_TRAPPED_CHEST.get(), new Item.Properties()));
+    public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>, net.minecraft.world.level.block.entity.BlockEntityType<pl.fuzjajadrowa.froggy.block.entity.FroggyTrappedChestBlockEntity>> FROGGY_TRAPPED_CHEST_BE = BLOCK_ENTITIES.register("froggy_trapped_chest",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(pl.fuzjajadrowa.froggy.block.entity.FroggyTrappedChestBlockEntity::new, FROGGY_TRAPPED_CHEST.get()).build(null));
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Froggy.MOD_ID);
 
@@ -97,6 +103,7 @@ public final class FroggyNeoForge {
                         output.accept(LARGE_POUCH_UPGRADE.get());
                         output.accept(FROGGY_BED_ITEM.get());
                         output.accept(PLAYER_PAINTING_ITEM.get());
+                        output.accept(FROGGY_TRAPPED_CHEST_ITEM.get());
                     })
                     .build());
 
@@ -176,6 +183,9 @@ public final class FroggyNeoForge {
         pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED = FROGGY_BED;
         pl.fuzjajadrowa.froggy.registry.FroggyBlocks.PLAYER_PAINTING = PLAYER_PAINTING;
         pl.fuzjajadrowa.froggy.registry.FroggyBlockEntities.PLAYER_PAINTING = PLAYER_PAINTING_BE;
+        FroggyItems.FROGGY_TRAPPED_CHEST = FROGGY_TRAPPED_CHEST_ITEM;
+        pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_TRAPPED_CHEST = FROGGY_TRAPPED_CHEST;
+        pl.fuzjajadrowa.froggy.registry.FroggyBlockEntities.FROGGY_TRAPPED_CHEST = FROGGY_TRAPPED_CHEST_BE;
 
         pl.fuzjajadrowa.froggy.registry.FroggyMenus.FROGGY_TAMED = FROGGY_TAMED_MENU;
         pl.fuzjajadrowa.froggy.registry.FroggyMenus.openMenuDelegate = (player, froggy) -> {
@@ -235,6 +245,7 @@ public final class FroggyNeoForge {
             event.registerEntityRenderer(FROGGY_TAMED.get(), FroggyRenderer::new);
             event.registerEntityRenderer(FROGGY_TRADER.get(), FroggyRenderer::new);
             event.registerBlockEntityRenderer(PLAYER_PAINTING_BE.get(), pl.fuzjajadrowa.froggy.client.PlayerPaintingBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(FROGGY_TRAPPED_CHEST_BE.get(), net.minecraft.client.renderer.blockentity.ChestRenderer::new);
         }
 
         @SubscribeEvent

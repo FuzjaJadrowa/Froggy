@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:chest"
+    },
+    {
+      "item": "minecraft:tripwire_hook"
+    },
+    {
+      "item": "froggy:fly_in_a_bottle"
+    }
+  ],
+  "result": {
+    "item": "froggy:froggy_trapped_chest",
+    "count": 1
+  }
+}

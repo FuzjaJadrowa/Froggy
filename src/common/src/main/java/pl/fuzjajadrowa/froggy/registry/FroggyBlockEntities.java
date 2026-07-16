@@ -6,4 +6,5 @@ import java.util.function.Supplier;
 
 public class FroggyBlockEntities {
     public static Supplier<BlockEntityType<PlayerPaintingBlockEntity>> PLAYER_PAINTING;
+    public static Supplier<BlockEntityType<pl.fuzjajadrowa.froggy.block.entity.FroggyTrappedChestBlockEntity>> FROGGY_TRAPPED_CHEST;
 }

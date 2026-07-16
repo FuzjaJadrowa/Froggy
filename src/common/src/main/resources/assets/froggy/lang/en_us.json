@@ -55,5 +55,7 @@
   "block.froggy.froggy_bed": "Froggy Bed",
   "item.froggy.froggy_bed": "Froggy Bed",
   "block.froggy.player_painting": "Player Painting",
-  "item.froggy.player_painting": "Player Painting"
+  "item.froggy.player_painting": "Player Painting",
+  "block.froggy.froggy_trapped_chest": "Froggy Trapped Chest",
+  "item.froggy.froggy_trapped_chest": "Froggy Trapped Chest"
 }

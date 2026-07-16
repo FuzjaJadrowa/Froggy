@@ -55,5 +55,7 @@
   "block.froggy.froggy_bed": "Łóżko żabca",
   "item.froggy.froggy_bed": "Łóżko żabca",
   "block.froggy.player_painting": "Obraz gracza",
-  "item.froggy.player_painting": "Obraz gracza"
+  "item.froggy.player_painting": "Obraz gracza",
+  "block.froggy.froggy_trapped_chest": "Skrzynia-Pułapka Żabca",
+  "item.froggy.froggy_trapped_chest": "Skrzynia-Pułapka Żabca"
 }

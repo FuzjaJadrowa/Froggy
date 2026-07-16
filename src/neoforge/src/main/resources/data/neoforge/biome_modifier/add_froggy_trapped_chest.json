@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "froggy:froggy_trapped_chest",
+  "step": "surface_structures"
+}
