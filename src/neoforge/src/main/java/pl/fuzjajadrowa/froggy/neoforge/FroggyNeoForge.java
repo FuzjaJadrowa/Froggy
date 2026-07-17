@@ -19,6 +19,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import pl.fuzjajadrowa.froggy.Froggy;
 import pl.fuzjajadrowa.froggy.client.FroggyRenderer;
 import pl.fuzjajadrowa.froggy.client.FroggySleepingRenderer;
+import pl.fuzjajadrowa.froggy.registry.FroggyCommands;
 import pl.fuzjajadrowa.froggy.registry.FroggyEntities;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggyStalkerEntity;
@@ -288,7 +289,7 @@ public final class FroggyNeoForge {
 
         @SubscribeEvent
         public static void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
-            pl.fuzjajadrowa.froggy.command.FroggyCommands.register(event.getDispatcher());
+            FroggyCommands.register(event.getDispatcher());
         }
     }
 }

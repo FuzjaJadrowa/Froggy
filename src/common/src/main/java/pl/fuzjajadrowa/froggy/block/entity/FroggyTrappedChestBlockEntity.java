@@ -47,7 +47,7 @@ public class FroggyTrappedChestBlockEntity extends ChestBlockEntity {
             FroggyJumpscareEntity jumpscare = FroggyEntities.JUMPSCARE.get().create(level);
             if (jumpscare != null) {
                 double x = pos.getX() + 0.5;
-                double y = pos.getY() - 0.7; // Start inside the chest
+                double y = pos.getY() - 0.7;
                 double z = pos.getZ() + 0.5;
 
                 float yRot = 0.0f;
@@ -67,7 +67,7 @@ public class FroggyTrappedChestBlockEntity extends ChestBlockEntity {
                 jumpscare.setYHeadRot(yRot);
 
                 jumpscare.setFromChest(true);
-                jumpscare.setScreaming(false); // Idle while sliding up
+                jumpscare.setScreaming(false);
 
                 level.addFreshEntity(jumpscare);
                 this.jumpscareEntityId = jumpscare.getId();
@@ -76,7 +76,7 @@ public class FroggyTrappedChestBlockEntity extends ChestBlockEntity {
             if (this.jumpscareEntityId != -1) {
                 net.minecraft.world.entity.Entity entity = level.getEntity(this.jumpscareEntityId);
                 if (entity instanceof FroggyJumpscareEntity jumpscare) {
-                    jumpscare.setScreaming(true); // Start screaming after sliding out
+                    jumpscare.setScreaming(true);
 
                     int r = level.random.nextInt(3);
                     net.minecraft.sounds.SoundEvent screamSound = r == 0 ? pl.fuzjajadrowa.froggy.registry.FroggySounds.SCREAM1.get() : (r == 1 ? pl.fuzjajadrowa.froggy.registry.FroggySounds.SCREAM2.get() : pl.fuzjajadrowa.froggy.registry.FroggySounds.SCREAM3.get());
@@ -151,6 +151,17 @@ public class FroggyTrappedChestBlockEntity extends ChestBlockEntity {
             //?}
 
             level.destroyBlock(pos, false);
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (this.jumpscareEntityId != -1 && this.level != null && !this.level.isClientSide()) {
+            net.minecraft.world.entity.Entity entity = this.level.getEntity(this.jumpscareEntityId);
+            if (entity instanceof pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity jumpscare) {
+                jumpscare.discard();
+            }
         }
     }
 }

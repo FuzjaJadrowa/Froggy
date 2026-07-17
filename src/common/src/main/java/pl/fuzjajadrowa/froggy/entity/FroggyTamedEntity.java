@@ -260,7 +260,10 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                 this.setYHeadRot(yaw);
                 this.setYBodyRot(yaw);
                 this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
-                this.moveTo(this.sleepingBedPos.getX() + 0.5, this.sleepingBedPos.getY() + 0.25, this.sleepingBedPos.getZ() + 0.70, yaw, this.getXRot());
+                net.minecraft.core.Direction opp = bedFacing.getOpposite();
+                double tx = this.sleepingBedPos.getX() + 0.5 + opp.getStepX() * 0.3;
+                double tz = this.sleepingBedPos.getZ() + 0.5 + opp.getStepZ() * 0.3;
+                this.moveTo(tx, this.sleepingBedPos.getY() + 0.25, tz, yaw, this.getXRot());
                 this.navigation.stop();
 
                 this.bedSnoringTimer--;
@@ -274,6 +277,22 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         }
 
         super.tick();
+
+        if (!this.level().isClientSide()) {
+            net.minecraft.world.entity.LivingEntity owner = this.getOwner();
+            int state = this.getTamedState();
+            if (owner != null && (state == 0 || state == 2)) {
+                if (owner.level() == this.level()) {
+                    if (this.isPassenger()) {
+                        double distSq = this.distanceToSqr(owner);
+                        if (distSq > 10000.0) {
+                            this.stopRiding();
+                            this.teleportToOwner(owner);
+                        }
+                    }
+                }
+            }
+        }
 
         if (screamCooldown > 0) {
             screamCooldown--;
@@ -624,6 +643,67 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         return null;
     }
 
+    public void teleportToOwner(net.minecraft.world.entity.LivingEntity owner) {
+        net.minecraft.core.BlockPos blockpos = owner.blockPosition();
+        for (int i = 0; i < 10; ++i) {
+            int j = this.random.nextInt(7) - 3;
+            int k = this.random.nextInt(3) - 1;
+            int l = this.random.nextInt(7) - 3;
+            int tx = blockpos.getX() + j;
+            int ty = blockpos.getY() + k;
+            int tz = blockpos.getZ() + l;
+            net.minecraft.core.BlockPos targetPos = new net.minecraft.core.BlockPos(tx, ty, tz);
+            if (this.level().getBlockState(targetPos).isAir() && 
+                this.level().getBlockState(targetPos.above()).isAir() && 
+                !this.level().getBlockState(targetPos.below()).isAir()) {
+                this.moveTo(tx + 0.5, ty, tz + 0.5, this.getYRot(), this.getXRot());
+                this.getNavigation().stop();
+                return;
+            }
+        }
+    }
+
+    @Override
+    protected boolean canRide(net.minecraft.world.entity.Entity vehicle) {
+        return this.getTamedState() != 1;
+    }
+
+    @Override
+    protected void hurtArmor(net.minecraft.world.damagesource.DamageSource damageSource, float damage) {
+        if (damage <= 0.0F) {
+            return;
+        }
+
+        damage = damage / 4.0F;
+        if (damage < 1.0F) {
+            damage = 1.0F;
+        }
+
+        for (net.minecraft.world.entity.EquipmentSlot equipmentslot : net.minecraft.world.entity.EquipmentSlot.values()) {
+            boolean isArmor = false;
+            //? if >=1.21.1 {
+            isArmor = equipmentslot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR;
+            //?} else {
+            /* isArmor = equipmentslot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR; */
+            //?}
+            if (isArmor) {
+                net.minecraft.world.item.ItemStack itemstack = this.getItemBySlot(equipmentslot);
+                if (!itemstack.isEmpty() && itemstack.isDamageableItem()) {
+                    //? if >=1.21.1 {
+                    itemstack.hurtAndBreak((int) damage, (net.minecraft.server.level.ServerLevel) this.level(), null, (item) -> {
+                        this.onEquippedItemBroken(item, equipmentslot);
+                        this.setItemSlot(equipmentslot, net.minecraft.world.item.ItemStack.EMPTY);
+                    });
+                    //?} else {
+                    /* itemstack.hurtAndBreak((int) damage, this, (entity) -> {
+                        entity.broadcastBreakEvent(equipmentslot);
+                        this.setItemSlot(equipmentslot, net.minecraft.world.item.ItemStack.EMPTY);
+                    }); */
+                    //?}
+                }
+            }
+        }
+    }
     public static class FollowOwnerGoal extends net.minecraft.world.entity.ai.goal.Goal {
         private final FroggyTamedEntity frog;
         private LivingEntity owner;
@@ -680,23 +760,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         }
 
         private void teleportToOwner() {
-            net.minecraft.core.BlockPos blockpos = this.owner.blockPosition();
-            for (int i = 0; i < 10; ++i) {
-                int j = this.frog.getRandom().nextInt(7) - 3;
-                int k = this.frog.getRandom().nextInt(3) - 1;
-                int l = this.frog.getRandom().nextInt(7) - 3;
-                int tx = blockpos.getX() + j;
-                int ty = blockpos.getY() + k;
-                int tz = blockpos.getZ() + l;
-                net.minecraft.core.BlockPos targetPos = new net.minecraft.core.BlockPos(tx, ty, tz);
-                if (this.frog.level().getBlockState(targetPos).isAir() && 
-                    this.frog.level().getBlockState(targetPos.above()).isAir() && 
-                    !this.frog.level().getBlockState(targetPos.below()).isAir()) {
-                    this.frog.moveTo(tx + 0.5, ty, tz + 0.5, this.frog.getYRot(), this.frog.getXRot());
-                    this.frog.getNavigation().stop();
-                    return;
-                }
-            }
+            this.frog.teleportToOwner(this.owner);
         }
 
         @Override

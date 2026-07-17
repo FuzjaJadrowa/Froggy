@@ -37,7 +37,7 @@ public class FroggyConfigScreen extends Screen {
 //?}
         this.addRenderableWidget(this.list);
 
-        // 1. Stalker Spawn Toggle
+        // Stalker Spawn Toggle
         Button stalkerToggle = Button.builder(getToggleText("gui.froggy.config.stalker", FroggyConfig.spawnStalker), b -> {
             FroggyConfig.spawnStalker = !FroggyConfig.spawnStalker;
             FroggyConfig.save();
@@ -45,7 +45,7 @@ public class FroggyConfigScreen extends Screen {
         }).bounds(0, 0, 120, 20).build();
         this.list.addEntry(Component.translatable("gui.froggy.config.stalker"), stalkerToggle);
 
-        // 2. Stalker Weight Slider
+        // Stalker Weight Slider
         ConfigSlider stalkerWeightSlider = new ConfigSlider(0, 0, 120, 20, 
                 Component.translatable("gui.froggy.config.weight_stalker"),
                 0.0F, 200.0F, 5.0F, (float) FroggyConfig.weightStalker,
@@ -53,7 +53,7 @@ public class FroggyConfigScreen extends Screen {
                 value -> Integer.toString(Math.round(value)));
         this.list.addEntry(Component.translatable("gui.froggy.config.weight_stalker"), stalkerWeightSlider);
 
-        // 3. Jumpscare Spawn Toggle
+        // Jumpscare Spawn Toggle
         Button jumpscareToggle = Button.builder(getToggleText("gui.froggy.config.jumpscare", FroggyConfig.spawnJumpscare), b -> {
             FroggyConfig.spawnJumpscare = !FroggyConfig.spawnJumpscare;
             FroggyConfig.save();
@@ -61,7 +61,7 @@ public class FroggyConfigScreen extends Screen {
         }).bounds(0, 0, 120, 20).build();
         this.list.addEntry(Component.translatable("gui.froggy.config.jumpscare"), jumpscareToggle);
 
-        // 4. Jumpscare Weight Slider
+        // Jumpscare Weight Slider
         ConfigSlider jumpscareWeightSlider = new ConfigSlider(0, 0, 120, 20, 
                 Component.translatable("gui.froggy.config.weight_jumpscare"),
                 0.0F, 200.0F, 5.0F, (float) FroggyConfig.weightJumpscare,
@@ -69,7 +69,7 @@ public class FroggyConfigScreen extends Screen {
                 value -> Integer.toString(Math.round(value)));
         this.list.addEntry(Component.translatable("gui.froggy.config.weight_jumpscare"), jumpscareWeightSlider);
 
-        // 5. Bored Spawn Toggle
+        // Bored Spawn Toggle
         Button boredToggle = Button.builder(getToggleText("gui.froggy.config.bored", FroggyConfig.spawnBored), b -> {
             FroggyConfig.spawnBored = !FroggyConfig.spawnBored;
             FroggyConfig.save();
@@ -77,7 +77,7 @@ public class FroggyConfigScreen extends Screen {
         }).bounds(0, 0, 120, 20).build();
         this.list.addEntry(Component.translatable("gui.froggy.config.bored"), boredToggle);
 
-        // 6. Bored Weight Slider
+        // Bored Weight Slider
         ConfigSlider boredWeightSlider = new ConfigSlider(0, 0, 120, 20, 
                 Component.translatable("gui.froggy.config.weight_bored"),
                 0.0F, 200.0F, 5.0F, (float) FroggyConfig.weightBored,
@@ -85,7 +85,7 @@ public class FroggyConfigScreen extends Screen {
                 value -> Integer.toString(Math.round(value)));
         this.list.addEntry(Component.translatable("gui.froggy.config.weight_bored"), boredWeightSlider);
 
-        // 7. Sleeping Spawn Toggle
+        // Sleeping Spawn Toggle
         Button sleepingToggle = Button.builder(getToggleText("gui.froggy.config.sleeping", FroggyConfig.spawnSleeping), b -> {
             FroggyConfig.spawnSleeping = !FroggyConfig.spawnSleeping;
             FroggyConfig.save();
@@ -93,7 +93,7 @@ public class FroggyConfigScreen extends Screen {
         }).bounds(0, 0, 120, 20).build();
         this.list.addEntry(Component.translatable("gui.froggy.config.sleeping"), sleepingToggle);
 
-        // 8. Sleeping Chance Slider
+        // Sleeping Chance Slider
         ConfigSlider sleepingChanceSlider = new ConfigSlider(0, 0, 120, 20, 
                 Component.translatable("gui.froggy.config.sleep_chance"),
                 0.0F, 1.0F, 0.01F, (float) FroggyConfig.sleepingSpawnChance,
@@ -101,7 +101,7 @@ public class FroggyConfigScreen extends Screen {
                 value -> Math.round(value * 100) + "%");
         this.list.addEntry(Component.translatable("gui.froggy.config.sleep_chance"), sleepingChanceSlider);
 
-        // 9. Min Spawn Cooldown Slider (seconds)
+        // Min Spawn Cooldown Slider
         ConfigSlider minCooldownSlider = new ConfigSlider(0, 0, 120, 20, 
                 Component.translatable("gui.froggy.config.min_rate"),
                 10.0F, 3600.0F, 10.0F, FroggyConfig.minSpawnRate / 20.0F,
@@ -109,7 +109,7 @@ public class FroggyConfigScreen extends Screen {
                 value -> Math.round(value) + "s");
         this.list.addEntry(Component.translatable("gui.froggy.config.min_rate"), minCooldownSlider);
 
-        // 10. Max Random Added Slider (seconds)
+        // Max Random Added Slider
         ConfigSlider maxRandomSlider = new ConfigSlider(0, 0, 120, 20, 
                 Component.translatable("gui.froggy.config.max_random"),
                 0.0F, 1800.0F, 10.0F, FroggyConfig.maxRandomAdded / 20.0F,
@@ -117,7 +117,7 @@ public class FroggyConfigScreen extends Screen {
                 value -> Math.round(value) + "s");
         this.list.addEntry(Component.translatable("gui.froggy.config.max_random"), maxRandomSlider);
 
-        // 11. Sleep Check Interval Slider (seconds)
+        // Sleep Check Interval Slider
         ConfigSlider sleepCheckSlider = new ConfigSlider(0, 0, 120, 20, 
                 Component.translatable("gui.froggy.config.sleep_check"),
                 5.0F, 300.0F, 5.0F, FroggyConfig.sleepingCheckInterval / 20.0F,
@@ -125,7 +125,7 @@ public class FroggyConfigScreen extends Screen {
                 value -> Math.round(value) + "s");
         this.list.addEntry(Component.translatable("gui.froggy.config.sleep_check"), sleepCheckSlider);
 
-        // 12. Scream Damage Level 1 EditBox
+        // Scream Damage Level 1
         EditBox screamLvl1Box = new EditBox(this.font, 0, 0, 120, 20,
                 Component.translatable("gui.froggy.config.scream_damage_lvl1"));
         screamLvl1Box.setFilter(s -> s.isEmpty() || s.matches("\\d{1,4}"));
@@ -135,7 +135,7 @@ public class FroggyConfigScreen extends Screen {
         });
         this.list.addEntry(Component.translatable("gui.froggy.config.scream_damage_lvl1"), screamLvl1Box);
 
-        // 13. Scream Damage Level 2 EditBox
+        // Scream Damage Level 2
         EditBox screamLvl2Box = new EditBox(this.font, 0, 0, 120, 20,
                 Component.translatable("gui.froggy.config.scream_damage_lvl2"));
         screamLvl2Box.setFilter(s -> s.isEmpty() || s.matches("\\d{1,4}"));
@@ -145,7 +145,7 @@ public class FroggyConfigScreen extends Screen {
         });
         this.list.addEntry(Component.translatable("gui.froggy.config.scream_damage_lvl2"), screamLvl2Box);
 
-        // 14. Scream Damage Level 3 EditBox
+        // 1Scream Damage Level 3
         EditBox screamLvl3Box = new EditBox(this.font, 0, 0, 120, 20,
                 Component.translatable("gui.froggy.config.scream_damage_lvl3"));
         screamLvl3Box.setFilter(s -> s.isEmpty() || s.matches("\\d{1,4}"));

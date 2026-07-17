@@ -27,6 +27,7 @@ import net.minecraftforge.registries.RegistryObject;
 import pl.fuzjajadrowa.froggy.Froggy;
 import pl.fuzjajadrowa.froggy.client.FroggyRenderer;
 import pl.fuzjajadrowa.froggy.client.FroggySleepingRenderer;
+import pl.fuzjajadrowa.froggy.registry.FroggyCommands;
 import pl.fuzjajadrowa.froggy.registry.FroggyEntities;
 import pl.fuzjajadrowa.froggy.entity.FroggyJumpscareEntity;
 import pl.fuzjajadrowa.froggy.entity.FroggySleepingEntity;
@@ -269,7 +270,7 @@ public final class FroggyForge {
 
         @SubscribeEvent
         public static void onRegisterCommands(net.minecraftforge.event.RegisterCommandsEvent event) {
-            pl.fuzjajadrowa.froggy.command.FroggyCommands.register(event.getDispatcher());
+            FroggyCommands.register(event.getDispatcher());
         }
     }
 }

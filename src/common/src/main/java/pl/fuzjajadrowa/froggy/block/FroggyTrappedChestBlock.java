@@ -65,4 +65,21 @@ public class FroggyTrappedChestBlock extends ChestBlock {
             };
         }
     }
+
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
+        net.minecraft.world.level.material.FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
+        return this.defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(TYPE, net.minecraft.world.level.block.state.properties.ChestType.SINGLE)
+                .setValue(WATERLOGGED, fluidstate.getType() == net.minecraft.world.level.material.Fluids.WATER);
+    }
+
+    @Override
+    public BlockState updateShape(BlockState state, net.minecraft.core.Direction direction, BlockState neighborState, net.minecraft.world.level.LevelAccessor level, net.minecraft.core.BlockPos pos, net.minecraft.core.BlockPos neighborPos) {
+        if (state.getValue(WATERLOGGED)) {
+            level.scheduleTick(pos, net.minecraft.world.level.material.Fluids.WATER, net.minecraft.world.level.material.Fluids.WATER.getTickDelay(level));
+        }
+        return state;
+    }
 }

@@ -294,7 +294,10 @@ public class FroggySpawner {
                 if (sleeping != null) {
                     Direction facing = bedState.hasProperty(BedBlock.FACING) ? bedState.getValue(BedBlock.FACING) : Direction.NORTH;
                     float yaw = facing.getOpposite().toYRot();
-                    sleeping.moveTo(bedPos.getX() + 0.5, bedPos.getY() + 0.56, bedPos.getZ() + 0.70, yaw, 0.0F);
+                    Direction opp = facing.getOpposite();
+                    double tx = bedPos.getX() + 0.5 + opp.getStepX() * 0.3;
+                    double tz = bedPos.getZ() + 0.5 + opp.getStepZ() * 0.3;
+                    sleeping.moveTo(tx, bedPos.getY() + 0.56, tz, yaw, 0.0F);
                     sleeping.setYBodyRot(yaw);
                     sleeping.setYHeadRot(yaw);
                     level.addFreshEntity(sleeping);
