@@ -463,6 +463,10 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("scream"));
             }
 
+            if (this.isPassenger()) {
+                return event.setAndContinue(RawAnimation.begin().thenLoop("idle"));
+            }
+
             double speedSq = this.getDeltaMovement().horizontalDistanceSqr();
             float walkSpeed = this.walkAnimation.speed();
             boolean isMoving = walkSpeed > 0.01F || speedSq > 0.01;

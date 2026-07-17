@@ -285,7 +285,7 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                 if (owner.level() == this.level()) {
                     if (this.isPassenger()) {
                         double distSq = this.distanceToSqr(owner);
-                        if (distSq > 10000.0) {
+                        if (distSq > 2500.0) {
                             this.stopRiding();
                             this.teleportToOwner(owner);
                         }
@@ -495,11 +495,60 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
         return super.hurt(source, amount);
     }
 
+    public int getInventoryLevel() {
+        int size = this.getInventorySize();
+        if (size >= 27) return 3;
+        if (size >= 18) return 2;
+        if (size >= 9) return 1;
+        return 0;
+    }
+
+    public int getScreamLevel() {
+        int damage = this.getScreamDamage();
+        if (damage >= pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl3) return 3;
+        if (damage >= pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl2) return 2;
+        if (damage >= pl.fuzjajadrowa.froggy.config.FroggyConfig.screamDamageLvl1) return 1;
+        return 0;
+    }
+
+    @Override
+    public boolean isPushable() {
+        return this.isAlive() && this.getTamedState() != 1;
+    }
+
+//? if >=1.21.1 {
+    @Override
+    protected void dropCustomDeathLoot(net.minecraft.server.level.ServerLevel level, net.minecraft.world.damagesource.DamageSource source, boolean recentlyHit) {
+    }
+//?} else {
+/*    @Override
+    protected void dropCustomDeathLoot(net.minecraft.world.damagesource.DamageSource source, int looting, boolean hitByPlayer) {
+    }
+*/
+//?}
+
     @Override
     public void die(net.minecraft.world.damagesource.DamageSource source) {
         super.die(source);
         if (!this.level().isClientSide()) {
             net.minecraft.world.Containers.dropContents(this.level(), this.blockPosition(), this.inventory);
+
+            int invLevel = this.getInventoryLevel();
+            if (invLevel == 2) {
+                this.spawnAtLocation(new net.minecraft.world.item.ItemStack(pl.fuzjajadrowa.froggy.registry.FroggyItems.SMALL_POUCH_UPGRADE.get()));
+            } else if (invLevel == 3) {
+                this.spawnAtLocation(new net.minecraft.world.item.ItemStack(pl.fuzjajadrowa.froggy.registry.FroggyItems.SMALL_POUCH_UPGRADE.get()));
+                this.spawnAtLocation(new net.minecraft.world.item.ItemStack(pl.fuzjajadrowa.froggy.registry.FroggyItems.MEDIUM_POUCH_UPGRADE.get()));
+            }
+
+            int screamLevel = this.getScreamLevel();
+            if (screamLevel == 2) {
+                this.spawnAtLocation(new net.minecraft.world.item.ItemStack(pl.fuzjajadrowa.froggy.registry.FroggyItems.SPEAKER_UPGRADE.get()));
+            } else if (screamLevel == 3) {
+                this.spawnAtLocation(new net.minecraft.world.item.ItemStack(pl.fuzjajadrowa.froggy.registry.FroggyItems.SPEAKER_UPGRADE.get()));
+                this.spawnAtLocation(new net.minecraft.world.item.ItemStack(pl.fuzjajadrowa.froggy.registry.FroggyItems.MEGAPHONE_UPGRADE.get()));
+            }
+
             if (this.level().getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_SHOWDEATHMESSAGES)) {
                 LivingEntity owner = this.getOwner();
                 if (owner instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {

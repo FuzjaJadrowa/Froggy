@@ -25,11 +25,6 @@ import pl.fuzjajadrowa.froggy.block.entity.PlayerPaintingBlockEntity;
 public class PlayerPaintingBlock extends Block implements EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    private static final VoxelShape NORTH_SHAPE = Block.box(-16.0, -16.0, 15.0, 32.0, 32.0, 16.0);
-    private static final VoxelShape SOUTH_SHAPE = Block.box(-16.0, -16.0, 0.0, 32.0, 32.0, 1.0);
-    private static final VoxelShape WEST_SHAPE = Block.box(15.0, -16.0, -16.0, 16.0, 32.0, 32.0);
-    private static final VoxelShape EAST_SHAPE = Block.box(0.0, -16.0, -16.0, 1.0, 32.0, 32.0);
-
     public PlayerPaintingBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
@@ -37,14 +32,12 @@ public class PlayerPaintingBlock extends Block implements EntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        Direction facing = state.getValue(FACING);
-        return switch (facing) {
-            case NORTH -> NORTH_SHAPE;
-            case SOUTH -> SOUTH_SHAPE;
-            case WEST -> WEST_SHAPE;
-            case EAST -> EAST_SHAPE;
-            default -> Shapes.block();
-        };
+        return Shapes.empty();
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return Shapes.empty();
     }
 
     @Override
