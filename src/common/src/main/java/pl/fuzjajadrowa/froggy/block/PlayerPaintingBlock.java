@@ -32,7 +32,12 @@ public class PlayerPaintingBlock extends Block implements EntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return Shapes.empty();
+        return switch (state.getValue(FACING)) {
+            case SOUTH -> Block.box(-16.0D, -16.0D, 0.0D, 32.0D, 32.0D, 1.0D);
+            case EAST -> Block.box(0.0D, -16.0D, -16.0D, 1.0D, 32.0D, 32.0D);
+            case WEST -> Block.box(15.0D, -16.0D, -16.0D, 16.0D, 32.0D, 32.0D);
+            default -> Block.box(-16.0D, -16.0D, 15.0D, 32.0D, 32.0D, 16.0D);
+        };
     }
 
     @Override
@@ -88,7 +93,28 @@ public class PlayerPaintingBlock extends Block implements EntityBlock {
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         if (!state.canSurvive(level, pos)) {
-            level.destroyBlock(pos, true);
+            if (!level.isClientSide) {
+                level.removeBlock(pos, false);
+                popResource(level, pos, new net.minecraft.world.item.ItemStack(this));
+            }
+        }
+    }
+
+    @Override
+    public void attack(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.player.Player player) {
+        if (!level.isClientSide) {
+            level.removeBlock(pos, false);
+            if (!player.isCreative()) {
+                popResource(level, pos, new net.minecraft.world.item.ItemStack(this));
+            }
+        }
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            level.playSound(null, pos, net.minecraft.sounds.SoundEvents.PAINTING_BREAK, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+            super.onRemove(state, level, pos, newState, isMoving);
         }
     }
 }

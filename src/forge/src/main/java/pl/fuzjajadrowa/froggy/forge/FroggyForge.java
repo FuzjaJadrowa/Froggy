@@ -87,7 +87,7 @@ public final class FroggyForge {
     public static final RegistryObject<net.minecraft.world.level.block.Block> FROGGY_TRAPPED_CHEST = BLOCKS.register("froggy_trapped_chest",
             () -> new pl.fuzjajadrowa.froggy.block.FroggyTrappedChestBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().strength(2.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
     public static final RegistryObject<Item> FROGGY_TRAPPED_CHEST_ITEM = ITEMS.register("froggy_trapped_chest",
-            () -> new net.minecraft.world.item.BlockItem(FROGGY_TRAPPED_CHEST.get(), new Item.Properties()));
+            () -> new FroggyTrappedChestBlockItem(FROGGY_TRAPPED_CHEST.get(), new Item.Properties()));
     public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<pl.fuzjajadrowa.froggy.block.entity.FroggyTrappedChestBlockEntity>> FROGGY_TRAPPED_CHEST_BE = BLOCK_ENTITIES.register("froggy_trapped_chest",
             () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(pl.fuzjajadrowa.froggy.block.entity.FroggyTrappedChestBlockEntity::new, FROGGY_TRAPPED_CHEST.get()).build(null));
 
@@ -271,6 +271,27 @@ public final class FroggyForge {
         @SubscribeEvent
         public static void onRegisterCommands(net.minecraftforge.event.RegisterCommandsEvent event) {
             FroggyCommands.register(event.getDispatcher());
+        }
+    }
+
+    public static class FroggyTrappedChestBlockItem extends net.minecraft.world.item.BlockItem {
+        public FroggyTrappedChestBlockItem(net.minecraft.world.level.block.Block block, Properties properties) {
+            super(block, properties);
+        }
+
+        @Override
+        public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
+            consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {
+                private net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer renderer = null;
+
+                @Override
+                public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    if (renderer == null) {
+                        renderer = new pl.fuzjajadrowa.froggy.client.FroggyChestItemRenderer();
+                    }
+                    return renderer;
+                }
+            });
         }
     }
 }
