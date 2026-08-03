@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_nether",
+  "features": "froggy:froggy_trapped_chest_nether",
+  "step": "surface_structures"
+}

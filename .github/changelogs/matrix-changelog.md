@@ -1,11 +1,7 @@
-# 1.2.1
+# 1.2.2
 ## Added
-- Added Trapped Froggy Chest block that plays a specific sequence of events when open.
-- Added Tamed Froggy ability to leave the passenger state when the player is far away and Froggy is in Follow or Patrol state.
-## Changed
-- Replaced /locatefh command by /froggy locatehouse command.
+- Added a Froggy Trapped Chest generating system using feature.
+- Added possibility to fix armor with exp when Froggy has it with mending enchantment.
+- Added full server support.
 ## Fixed
-- Fixed entering the passenger state for Tamed Froggy.
-- Fixed player skin detecting for Player Painting.
-- Fixed position of Sleeping and Tamed Froggy sleeping in bed.
-- Fixed hitbox of Player Painting.
+- Fixed Froggy Slepping suspension when player destroys the bed.
