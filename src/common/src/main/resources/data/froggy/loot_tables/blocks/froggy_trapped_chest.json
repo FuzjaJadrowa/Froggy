@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "froggy:froggy_trapped_chest"
+          "name": "minecraft:chest"
         }
       ],
       "conditions": [

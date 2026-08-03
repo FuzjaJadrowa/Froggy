@@ -237,6 +237,39 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
             this.sleepCooldown--;
         }
 
+        java.util.List<net.minecraft.world.item.ItemStack> damagedArmor = this.getDamagedMendingArmor();
+        if (!damagedArmor.isEmpty()) {
+            java.util.List<net.minecraft.world.entity.ExperienceOrb> orbs = this.level().getEntitiesOfClass(
+                net.minecraft.world.entity.ExperienceOrb.class,
+                this.getBoundingBox().inflate(8.0D)
+            );
+            for (net.minecraft.world.entity.ExperienceOrb orb : orbs) {
+                net.minecraft.world.phys.Vec3 vec = new net.minecraft.world.phys.Vec3(
+                    this.getX() - orb.getX(),
+                    this.getY() + (double) this.getEyeHeight() / 2.0D - orb.getY(),
+                    this.getZ() - orb.getZ()
+                );
+                double distSqr = vec.lengthSqr();
+                if (distSqr < 64.0D) {
+                    double speedFactor = 1.0D - Math.sqrt(distSqr) / 8.0D;
+                    orb.setDeltaMovement(orb.getDeltaMovement().add(vec.normalize().scale(speedFactor * speedFactor * 0.1D)));
+                }
+                if (this.distanceTo(orb) < 2.25D) {
+                    int xpValue = orb.getValue();
+                    if (xpValue > 0) {
+                        int remainingXp = this.repairArmor(xpValue);
+                        if (remainingXp < xpValue) {
+                            this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                                net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP,
+                                this.getSoundSource(), 0.1F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+                            
+                            orb.discard();
+                        }
+                    }
+                }
+            }
+        }
+
         if (this.isSleepingInBed()) {
             boolean shouldWakeUp = false;
             if (this.sleepingBedPos == null) {
@@ -343,6 +376,11 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                         this.playSound(screamSound, 1.0F, 1.0F);
 
                         target.hurt(this.damageSources().mobAttack(this), (float) this.getScreamDamage());
+
+                        LivingEntity owner = this.getOwner();
+                        if (owner instanceof Player playerOwner) {
+                            target.setLastHurtByPlayer(playerOwner);
+                        }
 
                         if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                             double startX = this.getX();
@@ -952,5 +990,74 @@ public class FroggyTamedEntity extends BaseFroggyEntity {
                 }
             }
         }
+    }
+
+    private java.util.List<net.minecraft.world.item.ItemStack> getDamagedMendingArmor() {
+        java.util.List<net.minecraft.world.item.ItemStack> list = new java.util.ArrayList<>();
+        net.minecraft.world.entity.EquipmentSlot[] slots = {
+            net.minecraft.world.entity.EquipmentSlot.HEAD,
+            net.minecraft.world.entity.EquipmentSlot.CHEST,
+            net.minecraft.world.entity.EquipmentSlot.LEGS,
+            net.minecraft.world.entity.EquipmentSlot.FEET
+        };
+        for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
+            net.minecraft.world.item.ItemStack stack = this.getItemBySlot(slot);
+            if (!stack.isEmpty() && stack.getDamageValue() > 0) {
+                boolean hasMending = false;
+                //? if >=1.21.1 {
+                hasMending = stack.getEnchantmentLevel(this.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.MENDING)) > 0;
+                //?} else {
+                /* hasMending = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.MENDING, stack) > 0; */
+                //?}
+                if (hasMending) {
+                    list.add(stack);
+                }
+            }
+        }
+        return list;
+    }
+
+    private int repairArmor(int xpValue) {
+        int remainingXp = xpValue;
+        while (remainingXp > 0) {
+            net.minecraft.world.entity.EquipmentSlot[] slots = {
+                net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET
+            };
+            java.util.List<net.minecraft.world.entity.EquipmentSlot> damagedSlots = new java.util.ArrayList<>();
+            for (net.minecraft.world.entity.EquipmentSlot slot : slots) {
+                net.minecraft.world.item.ItemStack stack = this.getItemBySlot(slot);
+                if (!stack.isEmpty() && stack.getDamageValue() > 0) {
+                    boolean hasMending = false;
+                    //? if >=1.21.1 {
+                    hasMending = stack.getEnchantmentLevel(this.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.MENDING)) > 0;
+                    //?} else {
+                    /* hasMending = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.MENDING, stack) > 0; */
+                    //?}
+                    if (hasMending) {
+                        damagedSlots.add(slot);
+                    }
+                }
+            }
+
+            if (damagedSlots.isEmpty()) {
+                break;
+            }
+
+            net.minecraft.world.entity.EquipmentSlot chosenSlot = damagedSlots.get(this.random.nextInt(damagedSlots.size()));
+            net.minecraft.world.item.ItemStack stack = this.getItemBySlot(chosenSlot);
+            int damage = stack.getDamageValue();
+            int repairAmount = Math.min(remainingXp * 2, damage);
+            stack.setDamageValue(damage - repairAmount);
+            
+            // Write it back and mark slot as dirty to sync damage value to client
+            this.setItemSlot(chosenSlot, stack);
+
+            int usedXp = (repairAmount + 1) / 2;
+            remainingXp -= usedXp;
+        }
+        return remainingXp;
     }
 }

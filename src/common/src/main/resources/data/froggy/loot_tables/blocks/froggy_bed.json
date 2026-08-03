@@ -6,15 +6,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "froggy:froggy_bed",
-              "properties": {
-                "part": "foot"
-              }
-            }
-          ],
           "name": "froggy:froggy_bed"
         }
       ],

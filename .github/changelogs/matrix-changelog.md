@@ -2,6 +2,10 @@
 ## Added
 - Added a Froggy Trapped Chest generating system using feature.
 - Added possibility to fix armor with exp when Froggy has it with mending enchantment.
-- Added full server support.
+- Added full server support. TO DO
+- When Froggy kills a mob it now drops experience orbs.
+## Changed
+- Changed loot from a Froggy Trapped Chest. Now drops a normal chest when destroyed.
 ## Fixed
 - Fixed Froggy Slepping suspension when player destroys the bed.
+- Fixed unnecessary Froggy Bed drop when player destroys it in creative mode. TO DO
