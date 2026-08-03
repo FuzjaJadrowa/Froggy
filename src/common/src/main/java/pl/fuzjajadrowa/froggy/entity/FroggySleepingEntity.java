@@ -51,6 +51,17 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
         } else {
             this.setDeltaMovement(Vec3.ZERO);
 
+            net.minecraft.world.level.block.state.BlockState bedState = this.level().getBlockState(this.blockPosition());
+            boolean isBed = bedState.is(net.minecraft.tags.BlockTags.BEDS) || bedState.is(pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED.get());
+            if (!isBed) {
+                net.minecraft.world.level.block.state.BlockState belowState = this.level().getBlockState(this.blockPosition().below());
+                isBed = belowState.is(net.minecraft.tags.BlockTags.BEDS) || belowState.is(pl.fuzjajadrowa.froggy.registry.FroggyBlocks.FROGGY_BED.get());
+            }
+            if (!isBed) {
+                wakeUp(null);
+                return;
+            }
+
             this.snoringTimer--;
             if (this.snoringTimer <= 0) {
                 this.playSound(FroggySounds.SLEEPING.get(), 0.6F, 1.0F);
@@ -88,7 +99,7 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
         return super.mobInteract(player, hand);
     }
 
-    private void wakeUp(Player player) {
+    private void wakeUp(net.minecraft.world.entity.player.Player player) {
         this.setScreaming(true);
         this.disappearTimer = 40;
         this.refreshDimensions();
@@ -101,8 +112,11 @@ public class FroggySleepingEntity extends BaseFroggyEntity {
         SoundEvent screamSound = r == 0 ? FroggySounds.SCREAM1.get() : (r == 1 ? FroggySounds.SCREAM2.get() : FroggySounds.SCREAM3.get());
         this.playSound(screamSound, 1.0F, 1.0F);
 
-        this.lookAt(player, 180.0F, 180.0F);
-        this.setYRot(this.yHeadRot);
+        net.minecraft.world.entity.player.Player lookTarget = player != null ? player : this.level().getNearestPlayer(this, 16.0);
+        if (lookTarget != null) {
+            this.lookAt(lookTarget, 180.0F, 180.0F);
+            this.setYRot(this.yHeadRot);
+        }
     }
 
     @Override
