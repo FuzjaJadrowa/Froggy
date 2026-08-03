@@ -233,7 +233,10 @@ public final class FroggyForge {
             event.put(FROGGY_TAMED.get(), pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity.createAttributes().build());
             event.put(FROGGY_TRADER.get(), pl.fuzjajadrowa.froggy.entity.FroggyTraderEntity.createAttributes().build());
         }
+    }
 
+    @Mod.EventBusSubscriber(modid = Froggy.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(FROGGY_STALKER.get(), FroggyRenderer::new);

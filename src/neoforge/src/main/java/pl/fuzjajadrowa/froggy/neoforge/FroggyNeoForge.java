@@ -221,7 +221,7 @@ public final class FroggyNeoForge {
         }
     }
 
-    @EventBusSubscriber(modid = Froggy.MOD_ID)
+    @EventBusSubscriber(modid = Froggy.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
     public static class ModEvents {
         @SubscribeEvent
         public static void buildContents(net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent event) {
@@ -235,18 +235,6 @@ public final class FroggyNeoForge {
             event.put(FROGGY_BORED.get(), FroggyBoredEntity.createAttributes().build());
             event.put(FROGGY_TAMED.get(), pl.fuzjajadrowa.froggy.entity.FroggyTamedEntity.createAttributes().build());
             event.put(FROGGY_TRADER.get(), pl.fuzjajadrowa.froggy.entity.FroggyTraderEntity.createAttributes().build());
-        }
-
-        @SubscribeEvent
-        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(FROGGY_STALKER.get(), FroggyRenderer::new);
-            event.registerEntityRenderer(FROGGY_JUMPSCARE.get(), FroggyRenderer::new);
-            event.registerEntityRenderer(FROGGY_SLEEPING.get(), FroggySleepingRenderer::new);
-            event.registerEntityRenderer(FROGGY_BORED.get(), FroggyRenderer::new);
-            event.registerEntityRenderer(FROGGY_TAMED.get(), FroggyRenderer::new);
-            event.registerEntityRenderer(FROGGY_TRADER.get(), FroggyRenderer::new);
-            event.registerBlockEntityRenderer(PLAYER_PAINTING_BE.get(), pl.fuzjajadrowa.froggy.client.PlayerPaintingBlockEntityRenderer::new);
-            event.registerBlockEntityRenderer(FROGGY_TRAPPED_CHEST_BE.get(), net.minecraft.client.renderer.blockentity.ChestRenderer::new);
         }
 
         @SubscribeEvent
@@ -275,6 +263,21 @@ public final class FroggyNeoForge {
                     });
                 }
             );
+        }
+    }
+
+    @EventBusSubscriber(modid = Froggy.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = net.neoforged.api.distmarker.Dist.CLIENT)
+    public static class ClientModEvents {
+        @SubscribeEvent
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(FROGGY_STALKER.get(), FroggyRenderer::new);
+            event.registerEntityRenderer(FROGGY_JUMPSCARE.get(), FroggyRenderer::new);
+            event.registerEntityRenderer(FROGGY_SLEEPING.get(), FroggySleepingRenderer::new);
+            event.registerEntityRenderer(FROGGY_BORED.get(), FroggyRenderer::new);
+            event.registerEntityRenderer(FROGGY_TAMED.get(), FroggyRenderer::new);
+            event.registerEntityRenderer(FROGGY_TRADER.get(), FroggyRenderer::new);
+            event.registerBlockEntityRenderer(PLAYER_PAINTING_BE.get(), pl.fuzjajadrowa.froggy.client.PlayerPaintingBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(FROGGY_TRAPPED_CHEST_BE.get(), net.minecraft.client.renderer.blockentity.ChestRenderer::new);
         }
     }
 

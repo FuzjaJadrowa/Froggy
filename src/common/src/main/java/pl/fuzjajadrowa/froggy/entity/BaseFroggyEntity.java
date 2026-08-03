@@ -325,7 +325,10 @@ public abstract class BaseFroggyEntity extends Animal implements GeoEntity {
         try {
             Class<?> screenClass = Class.forName("pl.fuzjajadrowa.froggy.client.CoughSyrupScreen");
             Object screen = screenClass.getConstructor(int.class).newInstance(this.getId());
-            net.minecraft.client.Minecraft.getInstance().setScreen((net.minecraft.client.gui.screens.Screen) screen);
+            Class<?> minecraftClass = Class.forName("net.minecraft.client.Minecraft");
+            Object minecraft = minecraftClass.getMethod("getInstance").invoke(null);
+            Class<?> parentScreenClass = Class.forName("net.minecraft.client.gui.screens.Screen");
+            minecraftClass.getMethod("setScreen", parentScreenClass).invoke(minecraft, screen);
         } catch (Throwable t) {
             t.printStackTrace();
         }
