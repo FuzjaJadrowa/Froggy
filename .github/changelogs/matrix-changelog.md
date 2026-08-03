@@ -8,4 +8,3 @@
 - Changed loot from a Froggy Trapped Chest. Now drops a normal chest when destroyed.
 ## Fixed
 - Fixed Froggy Slepping suspension when player destroys the bed.
-- Fixed unnecessary Froggy Bed drop when player destroys it in creative mode. TO DO
